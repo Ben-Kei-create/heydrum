@@ -8,7 +8,7 @@ struct AdSlotView: View {
     @State private var width: CGFloat = UIScreen.main.bounds.width
 
     var body: some View {
-        Palette.adBackground
+        Color.clear
             .frame(height: AdSizing.height(forWidth: width))
             .frame(maxWidth: .infinity)
             .overlay {
@@ -21,7 +21,7 @@ struct AdSlotView: View {
                     .onAppear { update(geo.size.width) }
                     .onChange(of: geo.size.width) { _, new in update(new) }
             })
-            .ignoresSafeArea(.container, edges: .bottom)
+            .background(Palette.adBackground.ignoresSafeArea(.container, edges: .bottom))
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("adSlot")
     }

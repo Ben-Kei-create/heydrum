@@ -9,6 +9,7 @@ struct AppShellView: View {
 
     var body: some View {
         @Bindable var coordinator = coordinator
+        VStack(spacing: 0) {
         ZStack {
             TabView(selection: $coordinator.selectedTab) {
                 NavigationStack(path: $coordinator.homePath) {
@@ -41,10 +42,9 @@ struct AppShellView: View {
                     .zIndex(1)
             }
         }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            if ads.isSlotPresent && !keyboard.isVisible {
-                AdSlotView()
-            }
+        if ads.isSlotPresent && !keyboard.isVisible {
+            AdSlotView()
+        }
         }
         .background(Palette.paper.ignoresSafeArea())
     }

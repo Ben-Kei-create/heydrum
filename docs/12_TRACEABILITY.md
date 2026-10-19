@@ -22,3 +22,7 @@
 | NFR-009/010 | 04 / assets | AVFoundation, bundled WAV | T-003/004/019/036 |
 
 各テストについてCodexは `NOT IMPLEMENTED / NOT RUN / PASS / FAIL` のいずれかで報告。仕様を満たすコードが存在するだけではテストPASSとしない。
+
+
+## Implementation mapping (actual files)
+FR-001 HomeView · FR-002 DrumView/DrumSoundService · FR-004 VoiceEditorViewModel/SpeechText · FR-005/006 SystemSpeechService + SpeechSessionHub · FR-007/008 PlaybackView/PlaybackViewModel/AppCoordinator · FR-009/010/011 JSONHistoryRepository/HistoryViewModel · FR-012 AppShellView/AdSlotView/AdMobManager · FR-013/014 StoreKitPurchaseService/SettingsView · FR-015 SettingsStore/SettingsView · Tests: see docs/VERIFICATION.md (status per test ID).

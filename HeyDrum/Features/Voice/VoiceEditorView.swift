@@ -66,6 +66,13 @@ struct VoiceEditorView: View {
             .padding(Metrics.outerPadding)
         }
         .scrollDismissesKeyboard(.interactively)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("閉じる") { focused = false }
+                    .accessibilityIdentifier("keyboardDismiss")
+            }
+        }
         .background(Palette.paper)
         .navigationTitle("音声モード")
         .navigationBarTitleDisplayMode(.inline)
