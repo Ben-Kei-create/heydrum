@@ -7,89 +7,42 @@ let S = 1024
 let cs = CGColorSpace(name: CGColorSpace.sRGB)!
 let ctx = CGContext(data: nil, width: S, height: S, bitsPerComponent: 8, bytesPerRow: 0, space: cs,
                     bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue)!
-ctx.translateBy(x: 0, y: CGFloat(S)); ctx.scaleBy(x: 1, y: -1)   // top-left origin
-
-func c(_ hex: UInt32, _ a: CGFloat = 1) -> CGColor {
-    CGColor(colorSpace: cs, components: [CGFloat((hex >> 16) & 255) / 255, CGFloat((hex >> 8) & 255) / 255, CGFloat(hex & 255) / 255, a])!
+ctx.translateBy(x: 0, y: CGFloat(S)); ctx.scaleBy(x: 1, y: -1)
+func c(_ hex: UInt32) -> CGColor {
+    CGColor(colorSpace: cs, components: [CGFloat((hex >> 16) & 255) / 255, CGFloat((hex >> 8) & 255) / 255, CGFloat(hex & 255) / 255, 1])!
 }
-func linear(_ colors: [CGColor], _ locs: [CGFloat]) -> CGGradient { CGGradient(colorsSpace: cs, colors: colors as CFArray, locations: locs)! }
-func radial(_ ctx: CGContext, _ center: CGPoint, _ r: CGFloat, _ colors: [CGColor], _ locs: [CGFloat]) {
-    ctx.drawRadialGradient(linear(colors, locs), startCenter: center, startRadius: 0, endCenter: center, endRadius: r, options: [])
-}
+let orange = c(0xF47B3A), paper = c(0xFCFBF7), white = c(0xFFFFFF)
+ctx.setFillColor(paper); ctx.fill(CGRect(x: 0, y: 0, width: S, height: S))
 
-// Background: warm paper → soft beige, with glows so the glass has something to pick up.
-ctx.drawLinearGradient(linear([c(0xFFFBF5), c(0xF6E7D6), c(0xEBD5BC)], [0, 0.55, 1]), start: CGPoint(x: 0, y: 0), end: CGPoint(x: S, y: S), options: [])
-radial(ctx, CGPoint(x: 760, y: 700), 520, [c(0xED8D45, 0.55), c(0xED8D45, 0)], [0, 1])
-radial(ctx, CGPoint(x: 220, y: 260), 480, [c(0xFFFFFF, 0.9), c(0xFFFFFF, 0)], [0, 1])
-radial(ctx, CGPoint(x: 330, y: 820), 380, [c(0xE9C9A3, 0.7), c(0xE9C9A3, 0)], [0, 1])
+func rr(_ r: CGRect, _ rad: CGFloat) -> CGPath { CGPath(roundedRect: r, cornerWidth: rad, cornerHeight: rad, transform: nil) }
 
-struct Disc { let center: CGPoint; let r: CGFloat; let tint: UInt32; let tintA: CGFloat }
-let left = Disc(center: CGPoint(x: 392, y: 520), r: 262, tint: 0xE8D2B4, tintA: 0.62)
-let right = Disc(center: CGPoint(x: 632, y: 504), r: 262, tint: 0xED8D45, tintA: 0.78)
-
-func circle(_ d: Disc, inset: CGFloat = 0) -> CGPath {
-    CGPath(ellipseIn: CGRect(x: d.center.x - d.r + inset, y: d.center.y - d.r + inset, width: 2 * (d.r - inset), height: 2 * (d.r - inset)), transform: nil)
-}
-
-func glass(_ d: Disc) {
-    // drop shadow
-    ctx.saveGState()
-    ctx.setShadow(offset: CGSize(width: 0, height: -30), blur: 55, color: c(0x8A4A1C, 0.26))
-    ctx.addPath(circle(d)); ctx.setFillColor(c(d.tint, 0.9)); ctx.fillPath()
-    ctx.restoreGState()
-    ctx.saveGState()
-    ctx.addPath(circle(d)); ctx.clip()
-    let top = CGPoint(x: d.center.x - d.r * 0.6, y: d.center.y - d.r)
-    let bottom = CGPoint(x: d.center.x + d.r * 0.5, y: d.center.y + d.r)
-    // body
-    ctx.drawLinearGradient(linear([c(0xFFFFFF, 0.55), c(d.tint, d.tintA), c(d.tint, d.tintA * 0.9)], [0, 0.42, 1]), start: top, end: bottom, options: [])
-    // depth: darker toward lower-right edge, bright rim light
-    radial(ctx, CGPoint(x: d.center.x - d.r * 0.25, y: d.center.y - d.r * 0.3), d.r * 1.35,
-           [c(0xFFFFFF, 0.0), c(0xFFFFFF, 0.0), c(0x7A3B10, 0.16)], [0, 0.62, 1])
-    radial(ctx, d.center, d.r, [c(0xFFFFFF, 0), c(0xFFFFFF, 0), c(0xFFFFFF, 0.42)], [0, 0.78, 1])
-    // specular highlight (top-left)
-    ctx.saveGState()
-    ctx.translateBy(x: d.center.x - d.r * 0.34, y: d.center.y - d.r * 0.5); ctx.rotate(by: -0.62)
-    let hl = CGRect(x: -d.r * 0.5, y: -d.r * 0.16, width: d.r, height: d.r * 0.32)
-    ctx.addPath(CGPath(ellipseIn: hl, transform: nil)); ctx.clip()
-    ctx.drawLinearGradient(linear([c(0xFFFFFF, 0.85), c(0xFFFFFF, 0.0)], [0, 1]), start: CGPoint(x: 0, y: hl.minY), end: CGPoint(x: 0, y: hl.maxY), options: [])
-    ctx.restoreGState()
-    // caustic glow bottom-right
-    radial(ctx, CGPoint(x: d.center.x + d.r * 0.42, y: d.center.y + d.r * 0.62), d.r * 0.55, [c(0xFFFFFF, 0.34), c(0xFFFFFF, 0)], [0, 1])
-    ctx.restoreGState()
-    // rim (gradient ring)
-    ctx.saveGState()
-    let ring = CGMutablePath(); ring.addPath(circle(d)); ring.addPath(circle(d, inset: 5))
-    ctx.addPath(ring); ctx.clip(using: .evenOdd)
-    ctx.drawLinearGradient(linear([c(0xFFFFFF, 0.95), c(0xFFFFFF, 0.25), c(0xFFFFFF, 0.65)], [0, 0.55, 1]),
-                           start: CGPoint(x: d.center.x - d.r, y: d.center.y - d.r), end: CGPoint(x: d.center.x + d.r, y: d.center.y + d.r), options: [])
-    ctx.restoreGState()
-}
-
-glass(left)
-glass(right)
-
-// Overlap lens: where the two glass layers stack
+ctx.translateBy(x: 512, y: 512); ctx.scaleBy(x: 0.88, y: 0.88); ctx.translateBy(x: -545, y: -550)
 ctx.saveGState()
-ctx.addPath(circle(left)); ctx.clip()
-ctx.addPath(circle(right)); ctx.clip()
-ctx.drawLinearGradient(linear([c(0xFFFFFF, 0.55), c(0xFFF3E4, 0.22), c(0xFFFFFF, 0.38)], [0, 0.5, 1]), start: CGPoint(x: 512, y: 260), end: CGPoint(x: 512, y: 770), options: [])
-ctx.restoreGState()
-ctx.saveGState()
-let lens = CGMutablePath(); lens.addPath(circle(left)); lens.addPath(circle(right))
-ctx.addPath(circle(left)); ctx.clip()
-ctx.setStrokeColor(c(0xFFFFFF, 0.8)); ctx.setLineWidth(3)
-ctx.addPath(circle(right)); ctx.strokePath()
-ctx.restoreGState()
-ctx.saveGState()
-ctx.addPath(circle(right)); ctx.clip()
-ctx.setStrokeColor(c(0xFFFFFF, 0.8)); ctx.setLineWidth(3)
-ctx.addPath(circle(left)); ctx.strokePath()
+ctx.translateBy(x: 410, y: 560); ctx.rotate(by: -0.30)
+let body = CGRect(x: -215, y: -345, width: 430, height: 690)
+ctx.addPath(rr(body, 100)); ctx.setFillColor(orange); ctx.fillPath()
+let screen = CGRect(x: -165, y: -230, width: 330, height: 520)
+ctx.addPath(rr(screen, 58)); ctx.setFillColor(white); ctx.fillPath()
+ctx.addPath(rr(CGRect(x: -52, y: -292, width: 104, height: 26), 13)); ctx.setFillColor(white); ctx.fillPath()
+// speech bubble
+let bubble = CGMutablePath()
+bubble.addPath(rr(CGRect(x: -105, y: -85, width: 210, height: 150), 44))
+ctx.addPath(bubble); ctx.setFillColor(orange); ctx.fillPath()
+let tail = CGMutablePath()
+tail.move(to: CGPoint(x: -85, y: 30)); tail.addLine(to: CGPoint(x: -88, y: 118)); tail.addLine(to: CGPoint(x: -5, y: 55)); tail.closeSubpath()
+ctx.addPath(tail); ctx.fillPath()
+ctx.setFillColor(white)
+for x in [-56.0, 0.0, 56.0] { ctx.fillEllipse(in: CGRect(x: x - 19, y: -28, width: 38, height: 38)) }
 ctx.restoreGState()
 
+// Sound arcs
+ctx.setStrokeColor(orange); ctx.setLineCap(.round); ctx.setLineWidth(46)
+let origin = CGPoint(x: 700, y: 540)
+for (r, a0, a1) in [(140.0, -58.0, 32.0), (250.0, -58.0, 32.0)] as [(CGFloat, CGFloat, CGFloat)] {
+    ctx.addArc(center: origin, radius: r, startAngle: a0 * .pi / 180, endAngle: a1 * .pi / 180, clockwise: false)
+    ctx.strokePath()
+}
 let out = CommandLine.arguments[1]
-let image = ctx.makeImage()!
 let dest = CGImageDestinationCreateWithURL(URL(fileURLWithPath: out) as CFURL, UTType.png.identifier as CFString, 1, nil)!
-CGImageDestinationAddImage(dest, image, nil)
+CGImageDestinationAddImage(dest, ctx.makeImage()!, nil)
 CGImageDestinationFinalize(dest)
-print("wrote", out)
