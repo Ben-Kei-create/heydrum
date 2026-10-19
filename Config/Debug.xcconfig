@@ -1,0 +1,10 @@
+// Debug (development) configuration: official Google TEST ids and a placeholder StoreKit product.
+// Never ship these values. Release.xcconfig + Secrets.xcconfig supply the real ones.
+HEYDRUM_BUNDLE_ID = example.heydrum.dev
+AD_UNIT_ID = ca-app-pub-3940256099942544/2435281174
+ADS_TEST_MODE = YES
+IN_APP_PURCHASE_PRODUCT_ID = example.heydrum.dev.remove_ads
+GAD_APPLICATION_IDENTIFIER = ca-app-pub-3940256099942544~1458002511
+
+// Local (git-ignored) overrides: DEVELOPMENT_TEAM, own bundle id, ...
+#include? "Local.xcconfig"

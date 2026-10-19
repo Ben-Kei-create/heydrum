@@ -1,0 +1,35 @@
+{
+  "identifier" : "9C3B7A10",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "480",
+      "familyShareable" : false,
+      "internalID" : "6740000001",
+      "localizations" : [
+        {
+          "description" : "広告を非表示にします（買い切り）",
+          "displayName" : "広告を非表示",
+          "locale" : "ja"
+        }
+      ],
+      "productID" : "example.heydrum.dev.remove_ads",
+      "referenceName" : "Remove Ads (TEST ONLY)",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "ja_JP",
+    "_storefront" : "JPN"
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

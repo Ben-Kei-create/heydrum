@@ -1,0 +1,8 @@
+// Copy to Config/Secrets.xcconfig (git-ignored) and fill in OWNER-ISSUED values for Release builds.
+// Do not commit the copy. Google test ids (ca-app-pub-3940256099942544...) are rejected by the Release guard.
+HEYDRUM_BUNDLE_ID = com.yourcompany.heydrum
+AD_UNIT_ID = ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY
+ADS_TEST_MODE = NO
+IN_APP_PURCHASE_PRODUCT_ID = com.yourcompany.heydrum.remove_ads
+GAD_APPLICATION_IDENTIFIER = ca-app-pub-XXXXXXXXXXXXXXXX~ZZZZZZZZZZ
+// DEVELOPMENT_TEAM = XXXXXXXXXX   (put in Local.xcconfig instead)

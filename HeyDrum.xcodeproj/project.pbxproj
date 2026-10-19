@@ -1,0 +1,581 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		00000000000000000000011D /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 00000000000000000000011C /* GoogleMobileAds */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		00000000000000000000012B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 000000000000000000000100 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00000000000000000000010E;
+			remoteInfo = HeyDrum;
+		};
+		00000000000000000000012D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 000000000000000000000100 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00000000000000000000010E;
+			remoteInfo = HeyDrum;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		000000000000000000000104 /* HeyDrum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HeyDrum.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		000000000000000000000105 /* HeyDrumTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HeyDrumTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		000000000000000000000106 /* HeyDrumUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HeyDrumUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		000000000000000000000107 /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		000000000000000000000108 /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		000000000000000000000109 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		00000000000000000000010A /* HeyDrum.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = HeyDrum.storekit; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		00000000000000000000010B /* HeyDrum */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = HeyDrum;
+			sourceTree = "<group>";
+		};
+		00000000000000000000010C /* HeyDrumTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = HeyDrumTests;
+			sourceTree = "<group>";
+		};
+		00000000000000000000010D /* HeyDrumUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = HeyDrumUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		000000000000000000000112 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00000000000000000000011D /* GoogleMobileAds in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000116 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000119 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		000000000000000000000101 = {
+			isa = PBXGroup;
+			children = (
+				00000000000000000000010B /* HeyDrum */,
+				00000000000000000000010C /* HeyDrumTests */,
+				00000000000000000000010D /* HeyDrumUITests */,
+				000000000000000000000103 /* Config */,
+				00000000000000000000010A /* HeyDrum.storekit */,
+				000000000000000000000102 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		000000000000000000000103 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000107 /* Debug.xcconfig */,
+				000000000000000000000108 /* Release.xcconfig */,
+				000000000000000000000109 /* Info.plist */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		000000000000000000000102 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				000000000000000000000104 /* HeyDrum.app */,
+				000000000000000000000105 /* HeyDrumTests.xctest */,
+				000000000000000000000106 /* HeyDrumUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		00000000000000000000010E /* HeyDrum */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000000000121;
+			buildPhases = (
+				000000000000000000000114,
+				000000000000000000000111,
+				000000000000000000000112,
+				000000000000000000000113,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				00000000000000000000010B,
+			);
+			name = HeyDrum;
+			packageProductDependencies = (
+				00000000000000000000011C /* GoogleMobileAds */,
+			);
+			productName = HeyDrum;
+			productReference = 000000000000000000000104;
+			productType = "com.apple.product-type.application";
+		};
+		00000000000000000000010F /* HeyDrumTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000000000124;
+			buildPhases = (
+				000000000000000000000115,
+				000000000000000000000116,
+				000000000000000000000117,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				00000000000000000000012A,
+			);
+			fileSystemSynchronizedGroups = (
+				00000000000000000000010C,
+			);
+			name = HeyDrumTests;
+			packageProductDependencies = (
+			);
+			productName = HeyDrumTests;
+			productReference = 000000000000000000000105;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		000000000000000000000110 /* HeyDrumUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 000000000000000000000127;
+			buildPhases = (
+				000000000000000000000118,
+				000000000000000000000119,
+				00000000000000000000011A,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				00000000000000000000012C,
+			);
+			fileSystemSynchronizedGroups = (
+				00000000000000000000010D,
+			);
+			name = HeyDrumUITests;
+			packageProductDependencies = (
+			);
+			productName = HeyDrumUITests;
+			productReference = 000000000000000000000106;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		000000000000000000000100 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					00000000000000000000010E = {CreatedOnToolsVersion = 27.0;};
+					00000000000000000000010F = {CreatedOnToolsVersion = 27.0; TestTargetID = 00000000000000000000010E;};
+					000000000000000000000110 = {CreatedOnToolsVersion = 27.0; TestTargetID = 00000000000000000000010E;};
+				};
+			};
+			buildConfigurationList = 00000000000000000000011E;
+			developmentRegion = ja;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				ja,
+				Base,
+				en,
+			);
+			mainGroup = 000000000000000000000101;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				00000000000000000000011B /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 000000000000000000000102;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				00000000000000000000010E,
+				00000000000000000000010F,
+				000000000000000000000110,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		000000000000000000000113 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000117 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		00000000000000000000011A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		000000000000000000000114 /* Release guard */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Release guard";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nif [ \"$CONFIGURATION\" != \"Release\" ]; then exit 0; fi\nfail() { echo \"error: Release guard: $1 (see Config/Config.example.xcconfig)\"; exit 1; }\n[ -n \"$AD_UNIT_ID\" ] || fail \"AD_UNIT_ID is empty\"\n[ -n \"$GAD_APPLICATION_IDENTIFIER\" ] || fail \"GAD_APPLICATION_IDENTIFIER is empty\"\n[ -n \"$IN_APP_PURCHASE_PRODUCT_ID\" ] || fail \"IN_APP_PURCHASE_PRODUCT_ID is empty\"\n[ -n \"$HEYDRUM_BUNDLE_ID\" ] || fail \"HEYDRUM_BUNDLE_ID is empty\"\ncase \"$AD_UNIT_ID$GAD_APPLICATION_IDENTIFIER\" in *3940256099942544*) fail \"Google TEST ad ids must not be used in Release\";; esac\ncase \"$IN_APP_PURCHASE_PRODUCT_ID$HEYDRUM_BUNDLE_ID\" in *example*|*EXAMPLE*|*REPLACE*|*placeholder*) fail \"placeholder bundle/product id in Release\";; esac\n[ \"$ADS_TEST_MODE\" = \"NO\" ] || fail \"ADS_TEST_MODE must be NO in Release\"\nexit 0\n";
+			alwaysOutOfDate = 1;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		000000000000000000000111 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000115 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		000000000000000000000118 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		00000000000000000000012A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 00000000000000000000010E /* HeyDrum */;
+			targetProxy = 00000000000000000000012B /* PBXContainerItemProxy */;
+		};
+		00000000000000000000012C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 00000000000000000000010E /* HeyDrum */;
+			targetProxy = 00000000000000000000012D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		00000000000000000000011F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 000000000000000000000107;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = 1;
+				SWIFT_VERSION = 5.0;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		000000000000000000000120 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 000000000000000000000108;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = 1;
+				SWIFT_VERSION = 5.0;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		000000000000000000000122 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "ヘイドラム";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(HEYDRUM_BUNDLE_ID)";
+				PRODUCT_NAME = HeyDrum;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SUPPORTS_MACCATALYST = NO;
+			};
+			name = Debug;
+		};
+		000000000000000000000123 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Config/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "ヘイドラム";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(HEYDRUM_BUNDLE_ID)";
+				PRODUCT_NAME = HeyDrum;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SUPPORTS_MACCATALYST = NO;
+			};
+			name = Release;
+		};
+		000000000000000000000125 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(HEYDRUM_BUNDLE_ID).tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HeyDrum.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HeyDrum";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+			};
+			name = Debug;
+		};
+		000000000000000000000126 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(HEYDRUM_BUNDLE_ID).tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/HeyDrum.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/HeyDrum";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+			};
+			name = Release;
+		};
+		000000000000000000000128 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(HEYDRUM_BUNDLE_ID).uitests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_TARGET_NAME = HeyDrum;
+			};
+			name = Debug;
+		};
+		000000000000000000000129 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(HEYDRUM_BUNDLE_ID).uitests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_TARGET_NAME = HeyDrum;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		00000000000000000000011E /* Build configuration list for PBXProject "HeyDrum" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00000000000000000000011F,
+				000000000000000000000120,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		000000000000000000000121 /* Build configuration list for PBXNativeTarget "HeyDrum" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000000000122,
+				000000000000000000000123,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		000000000000000000000124 /* Build configuration list for PBXNativeTarget "HeyDrumTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000000000125,
+				000000000000000000000126,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		000000000000000000000127 /* Build configuration list for PBXNativeTarget "HeyDrumUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				000000000000000000000128,
+				000000000000000000000129,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		00000000000000000000011B /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
+			requirement = {
+				kind = exactVersion;
+				version = 13.11.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		00000000000000000000011C /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 00000000000000000000011B /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 000000000000000000000100 /* Project object */;
+}

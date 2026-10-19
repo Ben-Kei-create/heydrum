@@ -1,0 +1,10 @@
+// Release configuration. Values are intentionally EMPTY: the "Release guard" build phase
+// fails the build until the owner supplies real ids in Config/Secrets.xcconfig (git-ignored).
+HEYDRUM_BUNDLE_ID =
+AD_UNIT_ID =
+ADS_TEST_MODE = NO
+IN_APP_PURCHASE_PRODUCT_ID =
+GAD_APPLICATION_IDENTIFIER =
+
+#include? "Local.xcconfig"
+#include? "Secrets.xcconfig"
