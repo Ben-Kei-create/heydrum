@@ -1,0 +1,109 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ヘイドラム 申請キット</title>
+<style>
+body{font-family:-apple-system,"Hiragino Sans",sans-serif;max-width:860px;margin:24px auto;padding:0 16px;color:#302C29;background:#FAF8F4;line-height:1.6}
+h1{font-size:22px}h2{font-size:17px;margin:28px 0 8px;border-left:6px solid #ED8D45;padding-left:10px}
+.f{background:#fff;border:1px solid #DDD7D0;border-radius:12px;padding:10px 12px;margin:8px 0}
+.l{font-size:13px;color:#756F69;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+pre{white-space:pre-wrap;word-break:break-word;margin:0;font:15px/1.6 -apple-system,"Hiragino Sans",sans-serif}
+button{background:#ED8D45;color:#302C29;border:0;border-radius:10px;padding:8px 14px;font-weight:700;cursor:pointer;min-height:36px}
+button.ok{background:#8FD19E}
+input{width:100%;box-sizing:border-box;padding:10px;border:1px solid #DDD7D0;border-radius:10px;font-size:15px;margin:4px 0}
+.cnt{font-size:12px;color:#756F69}
+.note{font-size:13px;color:#756F69}
+a{color:#D8752C}
+</style></head><body>
+<h1>ヘイドラム 申請キット</h1>
+<p class="note">各ブロックの「コピー」を押して App Store Connect に貼り付け。画像は <code>store/screenshots/iphone-6.9-captioned/</code>（宣伝用・文字入り）または <code>store/screenshots/iphone-6.9/</code>（画面そのまま）。リンク: <a href="https://developer.apple.com/account/resources/identifiers/list">Identifiers</a> / <a href="https://appstoreconnect.apple.com/apps">App Store Connect</a> / <a href="https://appstoreconnect.apple.com/business">ビジネス（契約）</a> / <a href="https://admob.google.com/home/">AdMob</a></p>
+<h2>0. あなたの情報（ここに入れると下のコピー内容の ★ が自動で置き換わります）</h2>
+<div class="f"><div class="l">お名前（または屋号）</div><input data-k="NAME" placeholder="例: 茂木 文昭"></div>
+<div class="f"><div class="l">連絡先メールアドレス</div><input data-k="EMAIL" placeholder="例: you@example.com"></div>
+<div class="f"><div class="l">電話番号（審査連絡用・公開されません）</div><input data-k="PHONE" placeholder="例: 090-0000-0000"></div>
+<div class="f"><div class="l">サポートURL（site/index.html を公開したURL）</div><input data-k="SUPPORT_URL" placeholder="https://…"></div>
+<div class="f"><div class="l">プライバシーポリシーURL（site/privacy-policy.html を公開したURL）</div><input data-k="PRIVACY_URL" placeholder="https://…"></div>
+<h2>1. アプリ作成（新規アプリ）</h2>
+<div class="f"><div class="l"><span>名前 <span class="cnt">5字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="ヘイドラム"></pre></div>
+<div class="f"><div class="l"><span>プライマリ言語 <span class="cnt">3字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="日本語"></pre></div>
+<div class="f"><div class="l"><span>バンドルID（選択） <span class="cnt">26字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="com.fumiakimogi777.heydrum"></pre></div>
+<div class="f"><div class="l"><span>SKU <span class="cnt">11字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="heydrum-001"></pre></div>
+<div class="f"><div class="l"><span>ユーザアクセス <span class="cnt">8字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="アクセス制限なし"></pre></div>
+<div class="f"><div class="l"><span>プラットフォーム <span class="cnt">6字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="iOS のみ"></pre></div>
+<h2>2. アプリ情報</h2>
+<div class="f"><div class="l"><span>サブタイトル（30字） <span class="cnt">16字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="2つの音と、大きな文字の読み上げ"></pre></div>
+<div class="f"><div class="l"><span>プライマリカテゴリ <span class="cnt">7字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="ユーティリティ"></pre></div>
+<div class="f"><div class="l"><span>セカンダリカテゴリ（任意） <span class="cnt">5字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="仕事効率化"></pre></div>
+<div class="f"><div class="l"><span>著作権 <span class="cnt">10字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="2026 ★NAME"></pre></div>
+<div class="f"><div class="l"><span>プライバシーポリシーURL <span class="cnt">12字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="★PRIVACY_URL"></pre></div>
+<div class="f"><div class="l"><span>サポートURL <span class="cnt">12字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="★SUPPORT_URL"></pre></div>
+<div class="f"><div class="l"><span>年齢制限 <span class="cnt">11字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="全項目「なし」→ 4+"></pre></div>
+<div class="f"><div class="l"><span>コンテンツ配信権 <span class="cnt">18字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="第三者コンテンツなし（効果音は自作）"></pre></div>
+<h2>3. バージョン 1.0（日本語）</h2>
+<div class="f"><div class="l"><span>プロモーション用テキスト（170字） <span class="cnt">70字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="ボタンひとつで音を鳴らし、入力した文字を大きく読み上げます。離れた場所の相手にも伝わる大きな文字で表示。読み上げの開始タイミングも選べます。"></pre></div>
+<div class="f"><div class="l"><span>説明文（4000字） <span class="cnt">586字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="ヘイドラムは、「音を鳴らす」と「文字を読み上げる」だけに絞った、とてもシンプルなアプリです。
+
+■ ドラムモード
+「ドラム音」と「金属音」、2つの大きなボタンをタップするだけ。連打もOKです。
+
+■ 音声モード
+読み上げたい文字を入力して「読み上げ開始」。画面いっぱいの大きな文字で表示しながら、iPhone標準の日本語音声で読み上げます。
+・文字は短いほど大きく、遠くの人にも読みやすい
+・「すぐ／3秒後／5秒後／10秒後／15秒後／30秒後」から開始タイミングを選べる
+・一時停止、再開、もう一度読み上げ
+・読み上げ中は白い画面に文字だけを表示。右下の「停止」でいつでも元の画面へ
+
+■ 履歴
+読み上げた文章は最大100件まで端末内に保存。ワンタップで再生できます。
+
+■ 設定
+・音量の調整
+・日本語の音声の選択、読み上げ速度（ゆっくり／標準／速め）
+・広告の非表示（買い切り）と購入の復元
+
+■ プライバシー
+入力した文章と履歴は端末の中だけに保存され、外部へ送信されません。読み上げにクラウドやAIサービスは使いません。インターネット接続がなくても、端末に日本語音声があれば読み上げできます。
+
+※声の種類は、お使いのiPhoneにインストールされている日本語音声によって決まります。
+※無料でご利用いただけます。広告を表示します（買い切りで非表示にできます）。"></pre></div>
+<div class="f"><div class="l"><span>キーワード（100字） <span class="cnt">53字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="読み上げ,音声,テキスト,大きな文字,ドラム,効果音,アナウンス,音読,タイマー,シンプル,ボタン,日本語"></pre></div>
+<div class="f"><div class="l"><span>このバージョンの最新情報 <span class="cnt">9字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="初回リリースです。"></pre></div>
+<h2>4. 価格と配信</h2>
+<div class="f"><div class="l"><span>価格 <span class="cnt">12字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="無料（App内課金あり）"></pre></div>
+<div class="f"><div class="l"><span>配信地域 <span class="cnt">22字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="日本（のみ／まずは日本で十分。後から追加可）"></pre></div>
+<div class="f"><div class="l"><span>税カテゴリ <span class="cnt">13字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="デフォルト（アプリ）のまま"></pre></div>
+<div class="f"><div class="l"><span>提供開始 <span class="cnt">12字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="審査通過後に手動リリース"></pre></div>
+<h2>5. アプリ内課金（非消耗型）</h2>
+<div class="f"><div class="l"><span>参照名 <span class="cnt">6字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="広告を非表示"></pre></div>
+<div class="f"><div class="l"><span>製品ID <span class="cnt">37字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="com.fumiakimogi777.heydrum.remove_ads"></pre></div>
+<div class="f"><div class="l"><span>表示名（30字） <span class="cnt">6字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="広告を非表示"></pre></div>
+<div class="f"><div class="l"><span>説明（45字） <span class="cnt">16字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="広告を非表示にします（買い切り）"></pre></div>
+<div class="f"><div class="l"><span>価格の目安 <span class="cnt">10字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="¥480（お好みで）"></pre></div>
+<div class="f"><div class="l"><span>ファミリー共有 <span class="cnt">2字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="オフ"></pre></div>
+<div class="f"><div class="l"><span>審査メモ（IAP） <span class="cnt">44字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="設定タブの「広告を非表示にする」から購入できます。購入すると下部の広告バナーが消えます。"></pre></div>
+<div class="f"><div class="l"><span>審査用スクリーンショット <span class="cnt">36字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="store/review/iap-review-settings.png"></pre></div>
+<h2>6. App Review Information</h2>
+<div class="f"><div class="l"><span>サインインが必要 <span class="cnt">2字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="オフ"></pre></div>
+<div class="f"><div class="l"><span>審査メモ <span class="cnt">140字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="読み上げは iOS 標準の音声合成（端末内）を使用し、外部のAI／クラウドサービスは使用しません。入力した文章と履歴は端末内にのみ保存されます。広告は Google AdMob（初回に同意画面が出る地域があります）、広告非表示は非消耗型の App 内課金です。ログインは不要です。"></pre></div>
+<div class="f"><div class="l"><span>連絡先 氏名/電話/メール <span class="cnt">23字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="★NAME / ★PHONE / ★EMAIL"></pre></div>
+<h2>7. App のプライバシー / 広告ID / 暗号化</h2>
+<div class="f"><div class="l"><span>IDFA（広告ID）を使用しますか <span class="cnt">24字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="はい → 「アプリ内で広告を配信する」にチェック"></pre></div>
+<div class="f"><div class="l"><span>入力文・履歴の収集 <span class="cnt">5字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="収集しない"></pre></div>
+<div class="f"><div class="l"><span>広告SDK（AdMob）が収集する種類 <span class="cnt">86字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="識別子（デバイスID）/ 使用状況データ（広告データ・製品操作）/ 診断 — 用途は「サードパーティ広告」「アプリの機能」。最新の Google 説明と突き合わせて最終確認"></pre></div>
+<div class="f"><div class="l"><span>輸出コンプライアンス <span class="cnt">53字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="標準の暗号化のみ（アプリ側で ITSAppUsesNonExemptEncryption=NO 設定済み）"></pre></div>
+<h2>8. TestFlight</h2>
+<div class="f"><div class="l"><span>ベータ版アプリの説明 <span class="cnt">68字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="2つの音を鳴らし、入力した文字を大きく読み上げるアプリです。広告の位置、広告非表示の購入、読み上げ画面の文字の大きさを確認してください。"></pre></div>
+<div class="f"><div class="l"><span>テスト内容 <span class="cnt">64字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="広告の表示位置、広告非表示の購入と復元、読み上げ画面の文字の大きさ、機内モードでの読み上げ、読み上げ開始タイミング（3秒後など）"></pre></div>
+<div class="f"><div class="l"><span>フィードバックメール <span class="cnt">6字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="★EMAIL"></pre></div>
+<div class="f"><div class="l"><span>暗号化の質問 <span class="cnt">24字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="標準の暗号化のみ（上記設定により出ない場合あり）"></pre></div>
+<h2>9. ビルド設定（あなたの Mac で）</h2>
+<div class="f"><div class="l"><span>Config/Secrets.xcconfig に追記（広告IDは設定済み） <span class="cnt">113字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="HEYDRUM_BUNDLE_ID = com.fumiakimogi777.heydrum
+IN_APP_PURCHASE_PRODUCT_ID = com.fumiakimogi777.heydrum.remove_ads"></pre></div>
+<div class="f"><div class="l"><span>Release ガードの確認コマンド <span class="cnt">30字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="sh tools/test_release_guard.sh"></pre></div>
+<div class="f"><div class="l"><span>Archive <span class="cnt">102字</span></span><button onclick="cp(this)">コピー</button></div><pre data-t="Xcode: 実機/Any iOS Device (arm64) を選択 → Product &gt; Archive → Distribute App &gt; App Store Connect &gt; Upload"></pre></div>
+<script>
+const vals={};
+document.querySelectorAll('input[data-k]').forEach(i=>i.addEventListener('input',()=>{vals[i.dataset.k]=i.value;render()}));
+function sub(t){return t.replace(/★(NAME|EMAIL|PHONE|SUPPORT_URL|PRIVACY_URL)/g,(m,k)=>vals[k]||m)}
+function render(){document.querySelectorAll('pre[data-t]').forEach(p=>{p.textContent=sub(p.dataset.t)})}
+async function cp(b){const t=b.closest('.f').querySelector('pre').textContent;try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}b.textContent='コピー済み';b.classList.add('ok');setTimeout(()=>{b.textContent='コピー';b.classList.remove('ok')},1400)}
+render();
+</script></body></html>
