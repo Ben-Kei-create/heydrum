@@ -1,6 +1,6 @@
 # App Store Connect 入力用（コピペ素材）
 
-画像: `store/screenshots/iphone-6.9/`（1320×2868、6.9インチ。これ1サイズで他サイズは自動縮小される）、アイコン `store/app-icon-1024.png`（※ビルドに同梱済みのアイコンが使われる。別途アップロード不要）、課金審査用 `store/review/iap-review-settings.png`。
+アップロード物は `store/UPLOAD/` にまとめ済み（README_UPLOAD.md）。元画像: `store/screenshots/iphone-6.9/`（1320×2868、6.9インチ。これ1サイズで他サイズは自動縮小される）、アイコン `store/app-icon-1024.png`（※ビルドに同梱済みのアイコンが使われる。別途アップロード不要）、課金審査用 `store/review/iap-review-settings.png`。
 
 ## 新規アプリ画面（今開いているダイアログ）
 | 項目 | 入力 |
