@@ -122,6 +122,9 @@ final class AdMobManager {
                 self.status = .noFill
                 return
             }
+            // Order (Google): consent → ATT → SDK start. ATT is only asked of users who may see ads.
+            await self.consent.requestTrackingAuthorization()
+            guard !Task.isCancelled, self.purchase.entitlement == .free else { return }
             await self.sdk.start()
             // Re-check the latest state after awaiting: entitlement AND consent may have changed meanwhile.
             guard !Task.isCancelled, self.purchase.entitlement == .free, self.consent.canRequestAds else {
@@ -168,11 +171,14 @@ final class FakeConsentService: AdConsentProviding {
     var privacyOptionsRequired = false
     private(set) var gatherCount = 0
     private(set) var presentOptionsCount = 0
+    private(set) var trackingRequestCount = 0
+    var onTrackingRequest: (() -> Void)?
 
     init(canRequestAds: Bool) { self.canRequestAds = canRequestAds }
 
     func gatherConsent() async -> Bool { gatherCount += 1; return canRequestAds }
     func presentPrivacyOptions() async { presentOptionsCount += 1 }
+    func requestTrackingAuthorization() async { trackingRequestCount += 1; onTrackingRequest?() }
 }
 
 @MainActor

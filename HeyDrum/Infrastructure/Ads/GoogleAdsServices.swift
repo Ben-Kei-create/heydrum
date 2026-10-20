@@ -1,6 +1,7 @@
 import GoogleMobileAds
 import UIKit
 import UserMessagingPlatform
+import AppTrackingTransparency
 
 /// Thin wrappers over Google Mobile Ads SDK 13.x / UMP so the rest of the app stays SDK-free.
 
@@ -34,6 +35,16 @@ final class UMPConsentService: AdConsentProviding {
             }
         }
         return ConsentInformation.shared.canRequestAds
+    }
+
+    /// iOS only shows the ATT dialog while the app is active, so wait for that first.
+    func requestTrackingAuthorization() async {
+        guard ATTrackingManager.trackingAuthorizationStatus == .notDetermined else { return }
+        for _ in 0..<50 where UIApplication.shared.applicationState != .active {
+            try? await Task.sleep(nanoseconds: 200_000_000)
+        }
+        guard UIApplication.shared.applicationState == .active else { return }
+        _ = await ATTrackingManager.requestTrackingAuthorization()
     }
 
     func presentPrivacyOptions() async {

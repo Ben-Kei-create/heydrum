@@ -17,6 +17,8 @@ protocol AdConsentProviding: AnyObject {
     var canRequestAds: Bool { get }
     var privacyOptionsRequired: Bool { get }
     func presentPrivacyOptions() async
+    /// App Tracking Transparency prompt (shown at most once by iOS). Called only after consent allows ads.
+    func requestTrackingAuthorization() async
 }
 
 @MainActor

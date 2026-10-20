@@ -74,3 +74,8 @@
 ### ADR-016 / App icon replaced (owner decision 2026-10-20)
 - アイコンを、オーナー提供のガラス調イラスト(黒い半透明の人型がオレンジのスマホ+吹き出しを持つ)に差し替え。1024×1024、透過なし。以前の「Hey!」入りフラット版は `reference/app-icon/heydrum-flat-hey-previous.png` に保存。
 - **要求への影響:** docs/00 §1「人物・ロボット等のモチーフを使わない」は主に画面UI向けの記述。アイコンの人型は抽象的で顔や実在人物ではない。オーナー指示のため採用。審査ガイドライン上の懸念は特にないが、提出前に小サイズ(60pt)での視認性を実機で確認すること。
+
+### ADR-017 / B plan: personalised ads + ATT (owner decision 2026-10-20)
+- ATT許可画面を実装(`UMPConsentService.requestTrackingAuthorization`)。順序は 同意(UMP) → ATT → 広告SDK起動。`canRequestAds` が偽・課金済み・権利未判定のときは出さない。ATT後に権利/同意を再確認してから SDK 起動。`NSUserTrackingUsageDescription` を Info.plist に追加、`PrivacyInfo.xcprivacy` は `NSPrivacyTracking=true`。
+- App Store の「トラッキングに使う」は、おおよその場所・デバイスID・製品の操作・広告データを「はい」(保守的)。プライバシーポリシーに広告ID/ATTの説明を追加。
+- ADR-012「ATTは要求しない」を置換。 **テスト:** AdTrackingPromptTests(4)。

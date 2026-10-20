@@ -38,3 +38,7 @@ Environment note: a wedged simulator made `xcodebuild test` hang before any test
 | Release build: no secrets / template values / well-formed dummy ids | FAIL (guard) / FAIL (guard) / PASS, as intended |
 
 Codex 2026-10-20 findings: P0 Release guard, P0 consent gate, P1 save-in-flight vs interruption, P1 preview vs interruption, P1 Dynamic Type, P2 sound script path, P2 UI test structure — all addressed in code with regression tests (see ADR-015). Codex's own StoreKit run could not fetch products on a fresh simulator and hit an Apple-account prompt; the local StoreKit tests here pass but T-026/027/028/029 remain simulator-StoreKitTest evidence only (no App Store sandbox). Not independently re-reviewed by Codex after these fixes.
+
+## 2026-10-20 (later) — ATT / B plan
+- Unit + integration: 104 tests, 0 failures (adds AdTrackingPromptTests: ATT after consent and before SDK start; none for denied consent / purchased / unknown entitlement; purchase during the prompt stops before SDK start).
+- Real prompt checked once in the iPhone 18 Pro simulator with the live (non-fake) services: Google's consent explainer ("Continue") appeared, then the iOS tracking prompt with the Japanese `NSUserTrackingUsageDescription`. App icon confirmed on the simulator home screen. The full UI suite was not re-run after this change (it uses fake consent and is unaffected by it); simulator only, no device.

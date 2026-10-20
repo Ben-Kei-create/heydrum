@@ -183,3 +183,51 @@ final class AdMobManagerTests: XCTestCase {
         XCTAssertEqual(r.ads.status, .noFill)
     }
 }
+
+// ATT ordering (B plan: personalised ads with ATT)
+@MainActor
+final class AdTrackingPromptTests: XCTestCase {
+    private func make(_ ent: EntitlementState, canRequest: Bool = true) -> (AdMobManager, FakeConsentService, FakeAdSDK, FakePurchaseService) {
+        let purchase = FakePurchaseService(entitlement: ent)
+        let consent = FakeConsentService(canRequestAds: canRequest)
+        let sdk = FakeAdSDK()
+        let ads = AdMobManager(config: AppConfig(adUnitID: "u", adsTestMode: true, removeAdsProductID: "p"),
+                               purchase: purchase, consent: consent, sdk: sdk, makeBanner: { FakeBannerController() })
+        ads.updateSlotWidth(390)
+        return (ads, consent, sdk, purchase)
+    }
+
+    func testTrackingPromptComesAfterConsentAndBeforeSDKStart() async {
+        let (ads, consent, sdk, _) = make(.free)
+        var sdkStartsAtPrompt = -1
+        consent.onTrackingRequest = { sdkStartsAtPrompt = sdk.startCount }
+        await ads.start()
+        XCTAssertEqual(consent.gatherCount, 1)
+        XCTAssertEqual(consent.trackingRequestCount, 1)
+        XCTAssertEqual(sdkStartsAtPrompt, 0, "SDK must not start before the ATT prompt")
+        XCTAssertEqual(sdk.startCount, 1)
+    }
+
+    func testNoTrackingPromptWithoutConsent() async {
+        let (ads, consent, sdk, _) = make(.free, canRequest: false)
+        await ads.start()
+        XCTAssertEqual(consent.trackingRequestCount, 0)
+        XCTAssertEqual(sdk.startCount, 0)
+    }
+
+    func testNoTrackingPromptForPurchasedOrUnknownEntitlement() async {
+        for ent in [EntitlementState.purchased, .checking, .unavailable] {
+            let (ads, consent, _, _) = make(ent)
+            await ads.start()
+            XCTAssertEqual(consent.trackingRequestCount, 0, "\(ent)")
+        }
+    }
+
+    func testPurchaseDuringTrackingPromptStopsBeforeSDKStart() async {
+        let (ads, consent, sdk, purchase) = make(.free)
+        consent.onTrackingRequest = { purchase.entitlement = .purchased }
+        await ads.start()
+        XCTAssertEqual(sdk.startCount, 0)
+        XCTAssertEqual(ads.requestCount, 0)
+    }
+}
