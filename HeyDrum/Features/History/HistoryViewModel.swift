@@ -16,6 +16,7 @@ final class HistoryViewModel {
     @ObservationIgnored private let repository: HistoryRepository
     @ObservationIgnored private let now: () -> Date
     /// Wired by the composition root: readiness check and navigation (kept out of the VM's concerns).
+    @ObservationIgnored var epoch: () -> Int = { 0 }
     @ObservationIgnored var verifyReadiness: () throws -> Void = {}
     @ObservationIgnored var openPlayback: (HistoryEntry) -> Void = { _ in }
 
@@ -46,6 +47,7 @@ final class HistoryViewModel {
 
     /// Replaying from history: same ID, count unchanged, row moves to the top.
     func play(_ entry: HistoryEntry) async {
+        let startEpoch = epoch()
         do {
             try verifyReadiness()
         } catch {
@@ -59,6 +61,7 @@ final class HistoryViewModel {
             message = "履歴を更新できません。空き容量などを確認してください"
             return
         }
+        guard epoch() == startEpoch else { return }   // interrupted while updating: do not start
         openPlayback(entry)
     }
 

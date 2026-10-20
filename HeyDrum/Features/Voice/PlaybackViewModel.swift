@@ -7,20 +7,42 @@ final class PlaybackViewModel {
     private(set) var state: PlaybackState = .idle
     private(set) var text = ""
     private(set) var highlightRange: NSRange?
+    /// Seconds left before reading starts (nil when not counting down).
+    private(set) var countdownRemaining: Int?
     @ObservationIgnored private(set) var sessionID: UUID?
+    @ObservationIgnored private var countdownTask: Task<Void, Never>?
+    @ObservationIgnored private let sleep: @Sendable (TimeInterval) async -> Void
 
     @ObservationIgnored private let hub: SpeechSessionHub
     @ObservationIgnored private let settings: SettingsStore
 
-    init(hub: SpeechSessionHub, settings: SettingsStore) {
+    init(hub: SpeechSessionHub, settings: SettingsStore,
+         sleep: @escaping @Sendable (TimeInterval) async -> Void = { try? await Task.sleep(nanoseconds: UInt64($0 * 1_000_000_000)) }) {
         self.hub = hub
         self.settings = settings
+        self.sleep = sleep
     }
 
     /// Starts a brand-new session for `text` (new `sessionID`; never touches history).
-    func begin(text: String) {
+    func begin(text: String, delaySeconds: Int = 0) {
         self.text = text
-        startSession()
+        cancelCountdown()
+        guard delaySeconds > 0 else { startSession(); return }
+        highlightRange = nil
+        state = .preparing
+        countdownRemaining = delaySeconds
+        countdownTask = Task { [weak self] in
+            guard let self else { return }
+            var remaining = delaySeconds
+            while remaining > 0 {
+                await self.sleep(1)
+                if Task.isCancelled { return }
+                remaining -= 1
+                self.countdownRemaining = remaining > 0 ? remaining : nil
+            }
+            self.countdownTask = nil
+            self.startSession()
+        }
     }
 
     /// Centre button: pause / resume / replay / retry.
@@ -39,6 +61,7 @@ final class PlaybackViewModel {
 
     /// Manual stop: detach the session before stopping so a late `didCancel` is ignored.
     func stop() {
+        cancelCountdown()
         if let id = sessionID { hub.end(id) }
         sessionID = nil
         highlightRange = nil
@@ -47,6 +70,11 @@ final class PlaybackViewModel {
 
     /// Background / audio interruption: stop speaking, never resume automatically (docs/03 UC-05).
     func interrupt() {
+        if countdownRemaining != nil {
+            cancelCountdown()
+            state = .finished
+            return
+        }
         switch state {
         case .preparing, .speaking, .paused:
             if let id = sessionID { hub.end(id) }
@@ -60,7 +88,14 @@ final class PlaybackViewModel {
 
     // MARK: Internals
 
+    private func cancelCountdown() {
+        countdownTask?.cancel()
+        countdownTask = nil
+        countdownRemaining = nil
+    }
+
     private func startSession() {
+        cancelCountdown()
         if let id = sessionID { hub.end(id) }
         sessionID = nil
         highlightRange = nil

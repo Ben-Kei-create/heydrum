@@ -34,14 +34,17 @@ final class AppDependencies {
         self.coordinator = coordinator
         let history = HistoryViewModel(repository: historyRepository, now: now)
         self.history = history
+        history.epoch = { [weak coordinator] in coordinator?.interruptionEpoch ?? 0 }
         history.verifyReadiness = { [settings] in try hub.verifyReadiness(voiceID: settings.preferredVoiceID) }
         history.openPlayback = { [weak coordinator] entry in
             coordinator?.openPlayback(text: entry.text, source: .history(id: entry.id))
         }
-        self.editor = VoiceEditorViewModel(history: history, hub: hub, settings: settings) { [weak coordinator] text, source in
-            coordinator?.openPlayback(text: text, source: source)
+        self.editor = VoiceEditorViewModel(history: history, hub: hub, settings: settings, epoch: { [weak coordinator] in coordinator?.interruptionEpoch ?? 0 }) { [weak coordinator] text, source, delay in
+            coordinator?.openPlayback(text: text, source: source, delaySeconds: delay)
         }
-        self.preview = VoicePreviewController(hub: hub, settings: settings)
+        let preview = VoicePreviewController(hub: hub, settings: settings)
+        self.preview = preview
+        coordinator.interruptionHandlers.append { [weak preview] in preview?.stop() }
     }
 
     static func live() -> AppDependencies {

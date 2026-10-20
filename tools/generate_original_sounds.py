@@ -1,5 +1,5 @@
 """Reproducible, original synthetic WAVs for HeyDrum; no external samples.
-Run: python assets/generate_original_sounds.py
+Run: python3 tools/generate_original_sounds.py   (needs numpy; writes into HeyDrum/Resources/Sounds/)
 """
 from pathlib import Path
 import math
@@ -7,7 +7,8 @@ import wave
 import numpy as np
 
 RATE = 44100
-OUT = Path(__file__).resolve().parent
+OUT = Path(__file__).resolve().parent.parent / "HeyDrum" / "Resources" / "Sounds"
+OUT.mkdir(parents=True, exist_ok=True)
 RNG = np.random.default_rng(20261019)
 
 def write_mono16(name: str, signal: np.ndarray):

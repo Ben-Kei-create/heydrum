@@ -60,7 +60,7 @@ struct AppHarness {
     let settings: SettingsStore
 
     static func make(entitlement: EntitlementState = .free, items: [HistoryEntry] = [],
-                     consent: FakeConsentService? = nil) -> AppHarness {
+                     consent: FakeConsentService? = nil, repository: HistoryRepository? = nil) -> AppHarness {
         let speech = FakeSpeechService()
         let sound = FakeSoundService()
         let purchase = FakePurchaseService(entitlement: entitlement)
@@ -71,7 +71,29 @@ struct AppHarness {
         let ads = AdMobManager(config: config, purchase: purchase, consent: consent ?? FakeConsentService(canRequestAds: true),
                                sdk: FakeAdSDK(), makeBanner: { FakeBannerController() })
         let deps = AppDependencies(config: config, settings: settings, sound: sound, speech: speech,
-                                   historyRepository: repo, purchase: purchase, ads: ads)
+                                   historyRepository: repository ?? repo, purchase: purchase, ads: ads)
         return AppHarness(deps: deps, speech: speech, sound: sound, purchase: purchase, history: repo, settings: settings)
     }
+}
+
+/// Repository whose writes can be held until the test releases them (simulates a slow save).
+actor GatedRepository: HistoryRepository {
+    private let inner = InMemoryHistoryRepository()
+    private var gate: CheckedContinuation<Void, Never>?
+    private var open = false
+    private(set) var waiting = false
+
+    func release() { open = true; gate?.resume(); gate = nil }
+    private func hold() async {
+        guard !open else { return }
+        waiting = true
+        await withCheckedContinuation { gate = $0 }
+    }
+    func list() async throws -> [HistoryEntry] { try await inner.list() }
+    func appendNew(text: String, at: Date) async throws -> HistoryEntry { await hold(); return try await inner.appendNew(text: text, at: at) }
+    func markPlayed(id: UUID, at: Date) async throws { await hold(); try await inner.markPlayed(id: id, at: at) }
+    func delete(id: UUID) async throws { try await inner.delete(id: id) }
+    func deleteAll() async throws { try await inner.deleteAll() }
+    func resetCorruptStore() async throws { try await inner.resetCorruptStore() }
+    func seed(_ text: String) async throws -> HistoryEntry { open = true; defer { open = false }; return try await inner.appendNew(text: text, at: Date(timeIntervalSince1970: 1_700_000_000)) }
 }

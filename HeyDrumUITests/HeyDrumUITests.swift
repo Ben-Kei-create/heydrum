@@ -247,4 +247,50 @@ final class HeyDrumUITests: XCTestCase {
         app.swipeUp()
         XCTAssertTrue(el("restoreButton").waitForExistence(timeout: 3))
     }
+
+    // Start-delay grid
+    func testDelayGridSelectionStartsCountdownAndStopCancelsIt() {
+        launch()
+        tapCard("homeVoiceCard")
+        for seconds in [0, 3, 5, 10, 15, 30] { XCTAssertTrue(el("delay-\(seconds)").exists, "grid has \(seconds)") }
+        el("delay-5").tap()
+        XCTAssertTrue(el("voiceStartButton").label.contains("5秒後"))
+        typeIntoEditor("遠くの人へ")
+        el("keyboardDismiss").tap()
+        el("voiceStartButton").tap()
+        let center = el("playbackCenterButton")
+        XCTAssertTrue(center.waitForExistence(timeout: 5))
+        XCTAssertTrue(center.label.hasPrefix("あと"), "centre control announces the countdown, got \(center.label)")
+        XCTAssertTrue(el("playbackStatus").label.hasSuffix("秒後に読み上げます"), "countdown label")
+        XCTAssertFalse(el("playbackCenterButton").isEnabled, "centre button is inactive while counting down")
+        el("playbackStopButton").tap()
+        XCTAssertTrue(app.navigationBars["音声モード"].waitForExistence(timeout: 3))
+        XCTAssertTrue(el("delay-5").isSelected, "selection is kept")
+    }
+
+    func testReadingTextGrowsWithDynamicType() {
+        func textHeight(_ extra: [String]) -> CGFloat {
+            app.terminate()
+            launch(extra)
+            tapCard("homeVoiceCard")
+            typeIntoEditor("本日は晴天なり")
+            el("keyboardDismiss").tap()
+            el("voiceStartButton").tap()
+            XCTAssertTrue(el("playbackText").waitForExistence(timeout: 5))
+            return el("playbackText").frame.height
+        }
+        let normal = textHeight([])
+        let large = textHeight(["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXL"])
+        XCTAssertGreaterThan(large, normal * 1.2, "reading text follows the Dynamic Type setting (\(normal) → \(large))")
+    }
+
+    func testReadingTextIsLarge() {
+        launch()
+        tapCard("homeVoiceCard")
+        typeIntoEditor("本日は晴天なり")
+        el("keyboardDismiss").tap()
+        el("voiceStartButton").tap()
+        XCTAssertTrue(el("playbackText").waitForExistence(timeout: 5))
+        XCTAssertGreaterThanOrEqual(el("playbackText").frame.height, 80, "short text is rendered in a very large font")
+    }
 }

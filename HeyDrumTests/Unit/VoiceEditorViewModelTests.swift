@@ -85,4 +85,45 @@ final class VoiceEditorViewModelTests: XCTestCase {
         let count = try await h.history.list().count
         XCTAssertEqual(count, 0)
     }
+
+    // Codex P1: a save in flight must not start speech after an interruption.
+    func testInterruptionDuringSaveDoesNotStartSpeechAfterwards() async throws {
+        let gated = GatedRepository()
+        let h = AppHarness.make(repository: gated)
+        h.deps.editor.text = "割込み"
+        let task = Task { await h.deps.editor.start() }
+        await waitUntil("save in flight") { h.deps.editor.isSubmitting }
+        await Task.yield()
+        h.deps.coordinator.handleInterruption()
+        await gated.release()
+        await task.value
+        XCTAssertFalse(h.deps.coordinator.isPlaybackVisible)
+        XCTAssertTrue(h.speech.calls.isEmpty)
+        XCTAssertEqual(h.deps.editor.text, "割込み", "draft kept")
+        XCTAssertFalse(h.deps.editor.isSubmitting)
+    }
+
+    func testInterruptionDuringHistoryUpdateDoesNotStartPlayback() async throws {
+        let gated = GatedRepository()
+        let seeded = try await gated.seed("履歴")
+        let h = AppHarness.make(repository: gated)
+        await h.deps.history.reload()
+        let task = Task { await h.deps.history.play(seeded) }
+        try await Task.sleep(nanoseconds: 100_000_000)
+        h.deps.coordinator.handleInterruption()
+        await gated.release()
+        await task.value
+        XCTAssertFalse(h.deps.coordinator.isPlaybackVisible)
+        XCTAssertTrue(h.speech.calls.isEmpty)
+    }
+
+    // Codex P1: the settings preview is also silenced by interruptions.
+    func testInterruptionStopsSettingsPreviewToo() {
+        let h = AppHarness.make()
+        h.deps.preview.play()
+        XCTAssertTrue(h.deps.preview.isPlaying)
+        h.deps.coordinator.handleInterruption()
+        XCTAssertFalse(h.deps.preview.isPlaying)
+        XCTAssertEqual(h.speech.stopCount, 1)
+    }
 }

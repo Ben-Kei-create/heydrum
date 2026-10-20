@@ -120,8 +120,8 @@ final class StoreKitPurchaseTests: XCTestCase {
     }
 
     // T-027 (failure)
-    func testFailedTransactionGrantsNothingAndAllowsRetry() async {
-        session.failTransactionsEnabled = true
+    func testFailedTransactionGrantsNothingAndAllowsRetry() async throws {
+        try await session.setSimulatedError(.generic(.unknown), forAPI: .purchase)
         let s = service()
         await loadProduct(s)
         await s.refreshEntitlements()
@@ -129,7 +129,7 @@ final class StoreKitPurchaseTests: XCTestCase {
         if case .failed = outcome {} else { XCTFail("expected failed, got \(outcome)") }
         XCTAssertEqual(s.entitlement, .free)
         XCTAssertFalse(s.isBusy)
-        session.failTransactionsEnabled = false
+        try await session.setSimulatedError(nil, forAPI: .purchase)
         let retry = await s.purchaseRemoveAds()
         XCTAssertEqual(retry, .purchased)
     }

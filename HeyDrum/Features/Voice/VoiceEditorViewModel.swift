@@ -21,13 +21,15 @@ final class VoiceEditorViewModel {
     @ObservationIgnored private let history: HistoryViewModel
     @ObservationIgnored private let hub: SpeechSessionHub
     @ObservationIgnored private let settings: SettingsStore
-    @ObservationIgnored private let openPlayback: (String, PlaybackSource) -> Void
+    @ObservationIgnored private let epoch: () -> Int
+    @ObservationIgnored private let openPlayback: (String, PlaybackSource, Int) -> Void
 
-    init(history: HistoryViewModel, hub: SpeechSessionHub, settings: SettingsStore,
-         openPlayback: @escaping (String, PlaybackSource) -> Void) {
+    init(history: HistoryViewModel, hub: SpeechSessionHub, settings: SettingsStore, epoch: @escaping () -> Int = { 0 },
+         openPlayback: @escaping (String, PlaybackSource, Int) -> Void) {
         self.history = history
         self.hub = hub
         self.settings = settings
+        self.epoch = epoch
         self.openPlayback = openPlayback
     }
 
@@ -41,6 +43,7 @@ final class VoiceEditorViewModel {
         guard canStart, let normalized = SpeechText.normalized(text) else { return }
         isSubmitting = true
         errorMessage = nil
+        let startEpoch = epoch()
         defer { isSubmitting = false }
 
         do {
@@ -51,7 +54,9 @@ final class VoiceEditorViewModel {
         }
         do {
             let entry = try await history.addNew(text: normalized)
-            openPlayback(entry.text, .editor)
+            // A background/interruption while saving cancels this start request (docs/03 UC-05, ER-14).
+            guard epoch() == startEpoch else { return }
+            openPlayback(entry.text, .editor, settings.startDelaySeconds)
         } catch HistoryError.corrupt, HistoryError.unsupportedSchema {
             errorMessage = "履歴を読み込めないため保存できません。履歴タブで復旧してください"
         } catch {

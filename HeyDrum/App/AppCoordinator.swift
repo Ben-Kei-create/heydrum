@@ -8,6 +8,10 @@ final class AppCoordinator {
     var homePath: [HomeDestination] = []
     private(set) var request: PlaybackRequest?
 
+    /// Bumped on every background/interruption. Start requests captured before it must not start speech afterwards.
+    @ObservationIgnored private(set) var interruptionEpoch = 0
+    /// Extra things to silence on interruption (e.g. the settings voice preview).
+    @ObservationIgnored var interruptionHandlers: [() -> Void] = []
     @ObservationIgnored let playback: PlaybackViewModel
     @ObservationIgnored private let sound: SoundProviding
 
@@ -19,11 +23,11 @@ final class AppCoordinator {
     var isPlaybackVisible: Bool { request != nil }
 
     /// Ignored while a playback screen is already up (double-tap guard).
-    func openPlayback(text: String, source: PlaybackSource) {
+    func openPlayback(text: String, source: PlaybackSource, delaySeconds: Int = 0) {
         guard request == nil else { return }
         sound.stopAll()
         request = PlaybackRequest(text: text, source: source)
-        playback.begin(text: text)
+        playback.begin(text: text, delaySeconds: delaySeconds)
     }
 
     /// Stops speech and returns to where playback was opened from. Idempotent (no double pop).
@@ -39,6 +43,8 @@ final class AppCoordinator {
 
     /// Background / audio interruption: silence everything, never auto-resume.
     func handleInterruption() {
+        interruptionEpoch += 1
+        interruptionHandlers.forEach { $0() }
         playback.interrupt()
         sound.stopAll()
     }

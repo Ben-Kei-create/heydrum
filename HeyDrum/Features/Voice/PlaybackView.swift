@@ -5,18 +5,20 @@ import SwiftUI
 struct PlaybackView: View {
     @Environment(AppCoordinator.self) private var coordinator
     @Environment(PlaybackViewModel.self) private var playback
+    /// 1.0 at the default text size; grows with the user's Dynamic Type setting.
+    @ScaledMetric(relativeTo: .largeTitle) private var typeScale: CGFloat = 1
 
     var body: some View {
         VStack(spacing: 0) {
             GeometryReader { proxy in
                 ScrollView {
                     Text(TextHighlighter.attributed(playback.text, highlight: playback.highlightRange))
-                        .font(.title2.weight(.semibold))
+                        .font(.system(size: PlaybackTextStyle.fontSize(forCharacterCount: playback.text.count, scale: typeScale), weight: .bold))
                         .foregroundStyle(Palette.ink)
-                        .lineSpacing(6)
+                        .lineSpacing(8)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
-                        .padding(.horizontal, 28)
+                        .padding(.horizontal, 16)
                         .padding(.vertical, 24)
                         .frame(minHeight: proxy.size.height)
                         .accessibilityIdentifier("playbackText")
@@ -54,7 +56,8 @@ struct PlaybackView: View {
     }
 
     private var statusText: String {
-        switch playback.state {
+        if let remaining = playback.countdownRemaining { return "\(remaining)秒後に読み上げます" }
+        return switch playback.state {
         case .idle, .preparing: "準備しています…"
         case .speaking: "読み上げ中"
         case .paused: "一時停止中"
@@ -70,7 +73,12 @@ struct PlaybackView: View {
                 Circle().fill(Palette.primaryOrange).frame(width: 72, height: 72)
                 switch playback.state {
                 case .idle, .preparing:
-                    ProgressView().tint(Palette.ink)
+                    if let remaining = playback.countdownRemaining {
+                        Text("\(remaining)").font(.system(size: 40, weight: .bold, design: .rounded)).foregroundStyle(Palette.ink)
+                            .accessibilityIdentifier("playbackCountdown")
+                    } else {
+                        ProgressView().tint(Palette.ink)
+                    }
                 case .speaking:
                     Image(systemName: "pause.fill").font(.title.weight(.bold)).foregroundStyle(Palette.ink)
                 case .paused:
@@ -90,7 +98,7 @@ struct PlaybackView: View {
 
     private var centerLabel: String {
         switch playback.state {
-        case .idle, .preparing: "準備中"
+        case .idle, .preparing: playback.countdownRemaining.map { "あと\($0)秒" } ?? "準備中"
         case .speaking: "一時停止"
         case .paused: "再開"
         case .finished: "もう一度読み上げる"

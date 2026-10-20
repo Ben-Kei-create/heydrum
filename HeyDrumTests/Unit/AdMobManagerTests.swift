@@ -146,4 +146,40 @@ final class AdMobManagerTests: XCTestCase {
         await r.ads.presentPrivacyOptions()
         XCTAssertEqual(r.consent.presentOptionsCount, 1)
     }
+
+    // Codex P0: latest consent must gate every request.
+    func testRevokingConsentDisposesBannerAndBlocksNextRequest() async {
+        let r = rig(.free)
+        await r.ads.start()
+        r.banner?.onResult?(true)
+        let banner = r.banner
+        r.consent.canRequestAds = false
+        await r.ads.presentPrivacyOptions()
+        XCTAssertEqual(r.ads.status, .noFill)
+        XCTAssertNil(r.ads.banner)
+        XCTAssertEqual(banner?.invalidated, true)
+        XCTAssertTrue(r.ads.isSlotPresent, "blank slot kept")
+        r.ads.updateSlotWidth(400)          // a layout change must not issue a new request
+        XCTAssertEqual(r.ads.requestCount, 1)
+    }
+
+    func testGrantingConsentThroughSettingsStartsAdvertisingOnce() async {
+        let r = rig(.free, canRequestAds: false)
+        await r.ads.start()
+        XCTAssertEqual(r.ads.status, .noFill)
+        r.consent.canRequestAds = true
+        await r.ads.presentPrivacyOptions()
+        await waitUntil("loading") { r.ads.status == .loading }
+        XCTAssertEqual(r.ads.requestCount, 1)
+        await r.ads.presentPrivacyOptions()   // same state again → no duplicate request
+        XCTAssertEqual(r.ads.requestCount, 1)
+    }
+
+    func testConsentRevokedWhileSDKStartsNeverRequests() async {
+        let r = rig(.free)
+        r.sdk.onStart = { r.consent.canRequestAds = false }
+        await r.ads.start()
+        XCTAssertEqual(r.ads.requestCount, 0)
+        XCTAssertEqual(r.ads.status, .noFill)
+    }
 }

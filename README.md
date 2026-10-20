@@ -18,7 +18,7 @@ xcodebuild -project HeyDrum.xcodeproj -scheme HeyDrum -destination 'platform=iOS
 ## 設定 (所有者作業)
 1. `Config/Local.xcconfig`(git管理外)に `DEVELOPMENT_TEAM = ...`、必要なら `HEYDRUM_BUNDLE_ID`。
 2. Debug は Google 公式テストID + `HeyDrum.storekit`(仮商品 `example.heydrum.dev.remove_ads`)で動作。
-3. Release は `Config/Config.example.xcconfig` を `Config/Secrets.xcconfig` にコピーして実IDを設定。空・テストID・仮ID のままだと **Release guard ビルドフェーズが失敗**する。
+3. Release は `Config/Config.example.xcconfig` を `Config/Secrets.xcconfig` にコピーして実IDを設定。空・Google テストID・配布テンプレート値・不正な形式のままだと **Release guard(`tools/release_guard.sh`)が失敗**する。形式のみ検証し、IDの所有権は確認しない。
 4. App Store Connect に同じ商品IDの非消耗型IAPを作成。`AppConfig.privacyPolicyURL` に公開URLを設定。
 5. 実機確認(音声の声質・機内モード・広告・Sandbox課金)は `docs/11_RELEASE_CHECKLIST.md`。
 

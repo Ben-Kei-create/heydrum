@@ -52,6 +52,24 @@ final class AdMobManager {
     func presentPrivacyOptions() async {
         await consent.presentPrivacyOptions()
         privacyOptionsRequired = consent.privacyOptionsRequired
+        reevaluateConsent()
+    }
+
+    /// Re-checks the CURRENT consent after the privacy form: revoked → dispose the banner, keep a blank slot;
+    /// granted again → resume through the normal flow (no duplicate requests).
+    func reevaluateConsent() {
+        guard purchase.entitlement == .free else { return }
+        switch status {
+        case .loading, .visible:
+            if !consent.canRequestAds {
+                tearDownBanner()
+                status = .noFill
+            }
+        case .noFill:
+            if consent.canRequestAds { beginConsentFlow() }
+        default:
+            break
+        }
     }
 
     // MARK: Internals
@@ -105,7 +123,11 @@ final class AdMobManager {
                 return
             }
             await self.sdk.start()
-            guard !Task.isCancelled, self.purchase.entitlement == .free else { return }
+            // Re-check the latest state after awaiting: entitlement AND consent may have changed meanwhile.
+            guard !Task.isCancelled, self.purchase.entitlement == .free, self.consent.canRequestAds else {
+                if self.purchase.entitlement == .free { self.status = .noFill }
+                return
+            }
             self.status = .loading
             self.requestBanner()
         }
@@ -113,6 +135,12 @@ final class AdMobManager {
 
     private func requestBanner() {
         guard status == .loading || status == .visible, slotWidth > 0, !config.adUnitID.isEmpty else { return }
+        // Final gate immediately before every request.
+        guard purchase.entitlement == .free, consent.canRequestAds else {
+            tearDownBanner()
+            status = purchase.entitlement == .free ? .noFill : status
+            return
+        }
         if banner == nil {
             let controller = makeBanner()
             controller.onResult = { [weak self] success in
@@ -150,7 +178,8 @@ final class FakeConsentService: AdConsentProviding {
 @MainActor
 final class FakeAdSDK: AdSDKStarting {
     private(set) var startCount = 0
-    func start() async { startCount += 1 }
+    var onStart: (() -> Void)?
+    func start() async { startCount += 1; onStart?() }
 }
 
 @MainActor

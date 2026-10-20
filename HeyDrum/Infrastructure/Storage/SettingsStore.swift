@@ -8,6 +8,7 @@ final class SettingsStore {
         static let volume = "heydrum.masterVolume"
         static let speed = "heydrum.speechSpeed"
         static let voice = "heydrum.preferredVoiceID"
+        static let startDelay = "heydrum.startDelaySeconds"
     }
 
     var masterVolume: Float {
@@ -28,6 +29,14 @@ final class SettingsStore {
         }
     }
 
+    /// Delay between pressing "読み上げ開始" and the first word (grid choice in the editor).
+    var startDelaySeconds: Int {
+        didSet {
+            if !StartDelay.options.contains(startDelaySeconds) { startDelaySeconds = StartDelay.normalize(startDelaySeconds); return }
+            defaults.set(startDelaySeconds, forKey: Key.startDelay)
+        }
+    }
+
     @ObservationIgnored private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {
@@ -39,6 +48,7 @@ final class SettingsStore {
         }
         speechSpeed = defaults.string(forKey: Key.speed).flatMap(SpeechSpeed.init(rawValue:)) ?? .normal
         preferredVoiceID = defaults.string(forKey: Key.voice)
+        startDelaySeconds = StartDelay.normalize(defaults.integer(forKey: Key.startDelay))
     }
 
     var snapshot: AppSettings {

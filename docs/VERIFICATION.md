@@ -1,4 +1,4 @@
-# Verification record (2026-10-19)
+# Verification record (updated 2026-10-20, after start-delay/large-text features and Codex review fixes)
 
 Environment: Xcode 27.1 (27A9275), iOS Simulator 27.0 "iPhone 18 Pro", iOS deployment target 17.0, Swift 5 mode.
 Real device: **none used** (all device-only items are NOT RUN).
@@ -25,3 +25,16 @@ Real AdMob: only the SDK integration compiles; no ad was loaded in this verifica
 - `currentEntitlements` has no error channel; entitlement cannot be reported `.unavailable` from a StoreKit outage (ADR-010).
 - Scheme StoreKit configuration reference (`../../HeyDrum.storekit`) follows Xcode's convention but was not verified by launching from Xcode; the unit tests load the file directly.
 - Commits are local; nothing was pushed.
+
+
+## 2026-10-20 update (supersedes the counts above)
+Environment note: a wedged simulator made `xcodebuild test` hang before any test ran (no "Test Case" lines); shutting down/rebooting the simulator fixed it. Codex reported the same class of xcodebuild post-processing hangs.
+
+| Command | Result |
+|---|---|
+| `-only-testing:HeyDrumTests test` (unit + integration incl. StoreKitTest + real AVSpeechSynthesizer) | PASS — 100 tests, 0 failures |
+| `-only-testing:HeyDrumUITests test` | PASS — 17 tests, 0 failures |
+| `sh tools/test_release_guard.sh` | PASS — 14/14 (empty, Google test ids, template values, malformed ids, test mode on, Debug unaffected) |
+| Release build: no secrets / template values / well-formed dummy ids | FAIL (guard) / FAIL (guard) / PASS, as intended |
+
+Codex 2026-10-20 findings: P0 Release guard, P0 consent gate, P1 save-in-flight vs interruption, P1 preview vs interruption, P1 Dynamic Type, P2 sound script path, P2 UI test structure — all addressed in code with regression tests (see ADR-015). Codex's own StoreKit run could not fetch products on a fresh simulator and hit an Apple-account prompt; the local StoreKit tests here pass but T-026/027/028/029 remain simulator-StoreKitTest evidence only (no App Store sandbox). Not independently re-reviewed by Codex after these fixes.

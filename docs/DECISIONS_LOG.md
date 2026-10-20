@@ -54,3 +54,19 @@
 - 既存のXcodeテンプレート(`heydrum.xcodeproj`, `MyApp.swift`; macOSの大文字小文字非区別でHeyDrumと衝突)は作業用領域へ退避し、`HeyDrum.xcodeproj`に置換した。
 - 履歴保存に `.atomic` 書込み。ファイル保護属性は OS 既定(未指定)。
 - キーボード上に「閉じる」ボタンを追加(広告スロットのキーボード中非表示→復帰を確実に操作可能にするため)。
+
+### ADR-013 / Start-delay grid (owner request 2026-10-20)
+- 音声モードに「読み上げ開始のタイミング」グリッド(すぐ/3/5/10/15/30秒後)を追加。選択は `SettingsStore.startDelaySeconds` に保存。ボタン押下時に履歴を保存し、読上げ画面を開いてカウントダウン(中央ボタンに残り秒数、ステータス「N秒後に読み上げます」)後に発話。停止・背景化・割込みでカウントダウンは破棄され、自動開始しない。履歴再生・「もう一度」は即時。
+- **対応テスト:** StartDelayTests、UI testDelayGridSelectionStartsCountdownAndStopCancelsIt。
+
+### ADR-014 / Reading text size (owner request)
+- 読上げ画面の本文を、遠くからでも読める大きさに変更。文字数に応じて88→30pt(`PlaybackTextStyle`)、さらに Dynamic Type(`@ScaledMetric`、最大2倍)に追随。長文はスクロール。
+
+### ADR-015 / Codex review 2026-10-20 fixes
+- P0 Release guard: `tools/release_guard.sh` に分離。空・Google テストID・配布テンプレート値(XXXX/yourcompany 等)・AdMob ID 形式・bundle/product 形式を拒否(`tools/test_release_guard.sh` 14件)。形式検証のみで、IDの所有権は検証できない。
+- P0 広告同意: `requestBanner()` 直前と SDK 起動後に最新 `canRequestAds`/権利を再確認。プライバシー設定フォーム後に再評価(拒否→バナー破棄・空スロット維持、許可→重複なく再開)。
+- P1 保存/履歴更新待ち中の割込み: `AppCoordinator.interruptionEpoch` を導入し、待機中に背景化・割込みがあれば再生を開始しない(下書きは保持、保存済み履歴は残る)。
+- P1 設定プレビューも割込みで停止(`interruptionHandlers`)。
+- P1 本文の Dynamic Type 追随(ADR-014)。
+- P2 `generate_original_sounds.py` の出力先を `HeyDrum/Resources/Sounds/` に修正。UIテストの割込みカウントダウン検証を実アクセシビリティ構造(中央ボタンのラベル)に合わせ、選択状態は `isSelected` を厳密に検査。StoreKit 失敗注入を `setSimulatedError` に更新。
+- アプリアイコン右下に「Hey!」を追加(オーナー指示)。

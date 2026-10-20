@@ -259,6 +259,7 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/tools/release_guard.sh",
 			);
 			name = "Release guard";
 			outputFileListPaths = (
@@ -267,7 +268,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\nif [ \"$CONFIGURATION\" != \"Release\" ]; then exit 0; fi\nfail() { echo \"error: Release guard: $1 (see Config/Config.example.xcconfig)\"; exit 1; }\n[ -n \"$AD_UNIT_ID\" ] || fail \"AD_UNIT_ID is empty\"\n[ -n \"$GAD_APPLICATION_IDENTIFIER\" ] || fail \"GAD_APPLICATION_IDENTIFIER is empty\"\n[ -n \"$IN_APP_PURCHASE_PRODUCT_ID\" ] || fail \"IN_APP_PURCHASE_PRODUCT_ID is empty\"\n[ -n \"$HEYDRUM_BUNDLE_ID\" ] || fail \"HEYDRUM_BUNDLE_ID is empty\"\ncase \"$AD_UNIT_ID$GAD_APPLICATION_IDENTIFIER\" in *3940256099942544*) fail \"Google TEST ad ids must not be used in Release\";; esac\ncase \"$IN_APP_PURCHASE_PRODUCT_ID$HEYDRUM_BUNDLE_ID\" in *example*|*EXAMPLE*|*REPLACE*|*placeholder*) fail \"placeholder bundle/product id in Release\";; esac\n[ \"$ADS_TEST_MODE\" = \"NO\" ] || fail \"ADS_TEST_MODE must be NO in Release\"\nexit 0\n";
+			shellScript = "exec \"$SRCROOT/tools/release_guard.sh\"\n";
 			alwaysOutOfDate = 1;
 		};
 /* End PBXShellScriptBuildPhase section */
