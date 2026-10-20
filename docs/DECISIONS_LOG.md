@@ -70,3 +70,7 @@
 - P1 本文の Dynamic Type 追随(ADR-014)。
 - P2 `generate_original_sounds.py` の出力先を `HeyDrum/Resources/Sounds/` に修正。UIテストの割込みカウントダウン検証を実アクセシビリティ構造(中央ボタンのラベル)に合わせ、選択状態は `isSelected` を厳密に検査。StoreKit 失敗注入を `setSimulatedError` に更新。
 - アプリアイコン右下に「Hey!」を追加(オーナー指示)。
+
+### ADR-016 / App icon replaced (owner decision 2026-10-20)
+- アイコンを、オーナー提供のガラス調イラスト(黒い半透明の人型がオレンジのスマホ+吹き出しを持つ)に差し替え。1024×1024、透過なし。以前の「Hey!」入りフラット版は `reference/app-icon/heydrum-flat-hey-previous.png` に保存。
+- **要求への影響:** docs/00 §1「人物・ロボット等のモチーフを使わない」は主に画面UI向けの記述。アイコンの人型は抽象的で顔や実在人物ではない。オーナー指示のため採用。審査ガイドライン上の懸念は特にないが、提出前に小サイズ(60pt)での視認性を実機で確認すること。
