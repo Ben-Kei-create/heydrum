@@ -11,17 +11,30 @@ struct PlaybackView: View {
     var body: some View {
         VStack(spacing: 0) {
             GeometryReader { proxy in
-                ScrollView {
-                    Text(TextHighlighter.attributed(playback.text, highlight: playback.highlightRange))
-                        .font(.system(size: PlaybackTextStyle.fontSize(forCharacterCount: playback.text.count, scale: typeScale), weight: .bold))
-                        .foregroundStyle(Palette.ink)
-                        .lineSpacing(8)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 24)
-                        .frame(minHeight: proxy.size.height)
-                        .accessibilityIdentifier("playbackText")
+                ScrollViewReader { scroller in
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            // Text appears as the synthesizer announces it. Left-aligned and top-anchored so
+                            // already shown lines never move; the font is fixed for the whole session.
+                            Text(playback.visibleText.isEmpty ? " " : playback.visibleText)   // never an empty Text (keeps the element and one line of height)
+                                .font(.system(size: PlaybackTextStyle.fontSize(forCharacterCount: playback.text.count, scale: typeScale), weight: .bold))
+                                .foregroundStyle(Palette.ink)
+                                .lineSpacing(10)
+                                .multilineTextAlignment(.leading)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .accessibilityLabel(playback.visibleText.isEmpty ? "読み上げ待機中" : playback.visibleText)
+                                .accessibilityIdentifier("playbackText")
+                            Color.clear.frame(height: 1).id("revealEnd")
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, max(24, proxy.size.height * 0.12))
+                        .padding(.bottom, 32)
+                        .frame(minHeight: proxy.size.height, alignment: .top)
+                    }
+                    .onChange(of: playback.revealedUTF16) { _, _ in
+                        // Keep the newest text in view for long passages.
+                        withAnimation(.easeOut(duration: 0.2)) { scroller.scrollTo("revealEnd", anchor: .bottom) }
+                    }
                 }
             }
 

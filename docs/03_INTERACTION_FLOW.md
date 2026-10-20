@@ -51,7 +51,7 @@ sequenceDiagram
 3. `SpeechService` の日本語音声存在確認/AVAudioSession準備。存在しなければエラーを入力画面に表示し保存しない。
 4. `HistoryRepository.appendNew` で原文保存 (最大100にprune)。**保存成功後** に読上げ画面へ移る。
 5. `PlaybackVM` がセッションを新規開始。`AVSpeechUtterance`とパラメータ設定→`AVSpeechSynthesizer.speak`。
-6. 読上げ画面に遷移し文字全文を表示。`didStart` で `speaking`、`willSpeakRange` でハイライト更新。
+6. 読上げ画面に遷移（この時点では本文は表示しない）。`didStart` で `speaking`、`willSpeakRange` が来るたびに、その範囲の末尾（Character境界に切り上げ）まで本文を追加表示する。保存・TTSには全文を使い、表示用の進捗(`revealedUTF16`)だけを別管理する。
 7. `didFinish` で `finished`、その画面に留まる。`もう一度`では同じIDを使い履歴登録を増やさない。
 8. `停止` で直ちに読み上げを止め、入力文字列とスクロールを維持した編集画面へ戻る。
 
@@ -97,7 +97,8 @@ sequenceDiagram
 ## UC-05 一時停止・再開・停止
 - 再生中の中央押下→ `pauseSpeaking(at: .immediate)` → 成功時 `paused`。
 - 一時停止中の中央押下→ `continueSpeaking()` → `speaking`。
-- 完了時の中央押下→ 新しい`sessionID`で全文を最初から再読。履歴登録はしない。
+- 完了時の中央押下→ 新しい`sessionID`で全文を最初から再読（表示は空から再び累積）。履歴登録はしない。
+- 一時停止中は表示進捗も停止、再開で続行。手動停止・背景化・割込みでは未読の後続文字を公開しない（自然終了だけが全文を表示する）。
 - 右下停止→ `activeSessionID`破棄 → `stopSpeaking(at: .immediate)` → 広告フッターを残して元画面へpop。二重pop禁止。
 - アプリ背景化→音声を停止。再開時に**勝手に再生しない**。背景化が読み上げ画面中なら `finished` 相当の停止状態にし、明示再生のみ受け付ける。
 

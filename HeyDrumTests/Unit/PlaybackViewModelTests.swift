@@ -77,7 +77,7 @@ final class PlaybackViewModelTests: XCTestCase {
         speech.send(.range(sessionID: old, location: 0, length: 1))
         await settle()
         XCTAssertEqual(vm.state, .preparing, "stale events must not touch the new session")
-        XCTAssertNil(vm.highlightRange)
+        XCTAssertEqual(vm.revealedUTF16, 0, "stale range must not reveal text of the new session")
         speech.send(.started(sessionID: new))
         await waitUntil("speaking") { vm.state == .speaking }
     }
@@ -146,37 +146,5 @@ final class PlaybackViewModelTests: XCTestCase {
         vm.begin(text: "b")
         XCTAssertEqual(speech.calls.count, 2)
         XCTAssertEqual(speech.stopCount, 1)
-    }
-
-    // T-021
-    func testHighlightRangesUseUTF16AndInvalidRangesAreIgnored() async {
-        let (vm, speech, _, _) = make()
-        let text = "こんにちは😀。\nあいうえお👨‍👩‍👧‍👦東京2026年"
-        vm.begin(text: text)
-        let id = speech.lastSessionID!
-        speech.send(.started(sessionID: id))
-        await waitUntil("speaking") { vm.state == .speaking }
-        let emojiLocation = (text as NSString).range(of: "😀").location
-        speech.send(.range(sessionID: id, location: emojiLocation, length: 2))
-        await waitUntil("range") { vm.highlightRange == NSRange(location: emojiLocation, length: 2) }
-        speech.send(.range(sessionID: id, location: 9_999, length: 5))        // out of bounds
-        speech.send(.range(sessionID: id, location: text.utf16.count - 1, length: 10))
-        await settle()
-        XCTAssertEqual(vm.highlightRange, NSRange(location: emojiLocation, length: 2), "invalid ranges are ignored")
-    }
-}
-
-final class TextHighlighterTests: XCTestCase {
-    func testAttributedStringHighlightsOnlyValidRanges() {
-        let text = "あ😀い👨‍👩‍👧‍👦う"
-        for loc in 0...text.utf16.count {
-            for len in 0...(text.utf16.count - loc + 2) {   // includes out-of-bounds lengths: must never crash
-                _ = TextHighlighter.attributed(text, highlight: NSRange(location: loc, length: len))
-            }
-        }
-        let plain = TextHighlighter.attributed(text, highlight: nil)
-        XCTAssertEqual(String(plain.characters), text)
-        let bad = TextHighlighter.attributed(text, highlight: NSRange(location: 500, length: 1))
-        XCTAssertEqual(String(bad.characters), text)
     }
 }

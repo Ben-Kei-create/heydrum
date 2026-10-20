@@ -35,6 +35,14 @@ final class HeyDrumUITests: XCTestCase {
         focusEditor().typeText(text)
     }
 
+    /// Waits until the reading text (accessibility label) equals `expected`; the text is revealed progressively.
+    private func waitForReadingText(_ expected: String, timeout: TimeInterval = 20, file: StaticString = #filePath, line: UInt = #line) {
+        let text = el("playbackText")
+        let predicate = NSPredicate(format: "label == %@", expected)
+        let result = XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: text)], timeout: timeout)
+        XCTAssertEqual(result, .completed, "reading text never became the full text; last label: \(text.label)", file: file, line: line)
+    }
+
     private func tapCard(_ id: String) {
         XCTAssertTrue(el(id).waitForExistence(timeout: 8))
         el(id).tap()
@@ -79,7 +87,7 @@ final class HeyDrumUITests: XCTestCase {
         el("voiceStartButton").tap()
 
         XCTAssertTrue(el("playbackScreen").waitForExistence(timeout: 5))
-        XCTAssertEqual(el("playbackText").label, "本日は晴天なり")
+        waitForReadingText("本日は晴天なり")
         XCTAssertFalse(tab("履歴").isHittable, "tab bar is hidden behind the playback screen")
         XCTAssertTrue(el("playbackCenterButton").isHittable)
         let stop = el("playbackStopButton")
@@ -221,6 +229,9 @@ final class HeyDrumUITests: XCTestCase {
         XCTAssertTrue(el("playbackScreen").waitForExistence(timeout: 5))
         XCTAssertTrue(el("playbackCenterButton").isHittable)
         XCTAssertTrue(el("playbackStopButton").isHittable)
+        let full = String(repeating: "abcdefghi ", count: 50).trimmingCharacters(in: .whitespaces)
+        waitForReadingText(full, timeout: 40)
+        XCTAssertLessThanOrEqual(el("playbackText").frame.maxY, el("playbackCenterButton").frame.minY + 1, "the newest text is scrolled into view above the controls")
         el("playbackText").swipeUp()           // the long text scrolls without covering the controls
         XCTAssertTrue(el("playbackCenterButton").isHittable)
         XCTAssertLessThanOrEqual(el("playbackStopButton").frame.maxY, el("adSlot").frame.minY + 0.5)
@@ -276,6 +287,7 @@ final class HeyDrumUITests: XCTestCase {
             el("keyboardDismiss").tap()
             el("voiceStartButton").tap()
             XCTAssertTrue(el("playbackText").waitForExistence(timeout: 5))
+            waitForReadingText("本日は晴天なり")
             return el("playbackText").frame.height
         }
         let normal = textHeight([])
@@ -290,6 +302,66 @@ final class HeyDrumUITests: XCTestCase {
         el("keyboardDismiss").tap()
         el("voiceStartButton").tap()
         XCTAssertTrue(el("playbackText").waitForExistence(timeout: 5))
+        waitForReadingText("本日は晴天なり")
         XCTAssertGreaterThanOrEqual(el("playbackText").frame.height, 80, "short text is rendered in a very large font")
+    }
+
+    // Owner spec: text appears with the speech instead of being shown in full up front.
+    func testReadingTextIsRevealedProgressivelyAndNeverRewinds() {
+        launch()
+        tapCard("homeVoiceCard")
+        let sentence = "本日は晴天なり。ご来店いただき、まことにありがとうございます。"
+        typeIntoEditor(sentence)
+        el("keyboardDismiss").tap()
+        el("voiceStartButton").tap()
+        XCTAssertTrue(el("playbackText").waitForExistence(timeout: 5))
+        var labels: [String] = []
+        let deadline = Date().addingTimeInterval(15)
+        while Date() < deadline {
+            let l = el("playbackText").label
+            if labels.last != l { labels.append(l) }
+            if l == sentence { break }
+            Thread.sleep(forTimeInterval: 0.15)
+        }
+        XCTAssertEqual(labels.last, sentence, "ends with the full text; labels: \(labels)")
+        XCTAssertGreaterThanOrEqual(labels.count, 3, "text grew in several steps, not all at once: \(labels)")
+        XCTAssertTrue(labels.first == "読み上げ待機中" || sentence.hasPrefix(labels.first!) && labels.first! != sentence, "the full text was not shown up front: \(labels)")
+        let shown = labels.filter { $0 != "読み上げ待機中" }
+        for (a, b) in zip(shown, shown.dropFirst()) {
+            XCTAssertTrue(b.hasPrefix(a) && b.count > a.count, "monotonic growth: '\(a)' → '\(b)'")
+        }
+    }
+
+    func testRevealPausesWithPauseAndContinuesOnResume() {
+        launch()
+        tapCard("homeVoiceCard")
+        typeIntoEditor("あいうえおかきくけこさしすせそたちつてとなにぬねの")
+        el("keyboardDismiss").tap()
+        el("voiceStartButton").tap()
+        XCTAssertTrue(el("playbackCenterButton").waitForExistence(timeout: 5))
+        let start = Date()
+        while el("playbackText").label == "読み上げ待機中", Date().timeIntervalSince(start) < 8 { Thread.sleep(forTimeInterval: 0.1) }
+        el("playbackCenterButton").tap()                       // pause
+        XCTAssertEqual(el("playbackCenterButton").label, "再開")
+        Thread.sleep(forTimeInterval: 0.5)                     // let any in-flight range settle
+        let frozen = el("playbackText").label
+        Thread.sleep(forTimeInterval: 1.6)
+        XCTAssertEqual(el("playbackText").label, frozen, "display does not advance while paused")
+        el("playbackCenterButton").tap()                       // resume
+        let resumeStart = Date()
+        while el("playbackText").label == frozen, Date().timeIntervalSince(resumeStart) < 6 { Thread.sleep(forTimeInterval: 0.1) }
+        XCTAssertNotEqual(el("playbackText").label, frozen, "display continues after resume")
+    }
+
+    func testNoTextShownDuringCountdown() {
+        launch()
+        tapCard("homeVoiceCard")
+        el("delay-5").tap()
+        typeIntoEditor("先に見えてはいけない文章")
+        el("keyboardDismiss").tap()
+        el("voiceStartButton").tap()
+        XCTAssertTrue(el("playbackText").waitForExistence(timeout: 5))
+        XCTAssertTrue(el("playbackCenterButton").label.hasPrefix("あと"), "centre label was '\(el("playbackCenterButton").label)', status '\(el("playbackStatus").label)'")
+        XCTAssertEqual(el("playbackText").label, "読み上げ待機中", "no part of the text is visible while counting down")
     }
 }

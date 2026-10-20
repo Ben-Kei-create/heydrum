@@ -73,7 +73,7 @@ final class ScreenshotTests: XCTestCase {
     /// Paced walkthrough (~25 s) recorded externally with `simctl io recordVideo` for the App Preview.
     func testPreviewFlow() {
         func pause(_ s: TimeInterval) { Thread.sleep(forTimeInterval: s) }
-        start(["-uitest-no-ads"])
+        start(["-uitest-chunk-interval", "0.8"])
         XCTAssertTrue(el("homeDrumCard").waitForExistence(timeout: 10))
         pause(2)
         el("homeDrumCard").tap(); pause(1.2)
@@ -90,9 +90,40 @@ final class ScreenshotTests: XCTestCase {
         el("keyboardDismiss").tap(); pause(1.2)
         el("voiceStartButton").tap()
         pause(3.8)                                   // countdown 3-2-1
-        pause(4.5)                                   // reading screen
+        pause(6.0)                                   // reading screen (text appears step by step)
         el("playbackStopButton").tap(); pause(1.2)
         app.tabBars.buttons["履歴"].tap(); pause(2.2)
         app.tabBars.buttons["設定"].tap(); pause(2.5)
+    }
+
+    /// Step-by-step evidence of the cumulative reveal (shots every ~0.9 s).
+    func testRevealSequence() {
+        start(["-uitest-chunk-interval", "0.9"])
+        XCTAssertTrue(el("homeVoiceCard").waitForExistence(timeout: 10))
+        el("homeVoiceCard").tap()
+        let editor = app.textViews["voiceTextEditor"]
+        XCTAssertTrue(editor.waitForExistence(timeout: 5))
+        editor.tap()
+        editor.typeText("本日は晴天なり。ご来店いただき、まことにありがとうございます。")
+        el("keyboardDismiss").tap()
+        el("voiceStartButton").tap()
+        _ = el("playbackText").waitForExistence(timeout: 5)
+        for i in 1...8 {
+            try? app.screenshot().pngRepresentation.write(to: URL(fileURLWithPath: "\(dir)/reveal-0\(i).png"))
+            Thread.sleep(forTimeInterval: 0.9)
+        }
+    }
+
+    func testLongTextSequence() {
+        start()
+        XCTAssertTrue(el("homeVoiceCard").waitForExistence(timeout: 10))
+        el("homeVoiceCard").tap()
+        let editor = app.textViews["voiceTextEditor"]
+        editor.tap()
+        editor.typeText(String(repeating: "本日は晴天なり。ご来店ありがとうございます。", count: 8))
+        el("keyboardDismiss").tap()
+        el("voiceStartButton").tap()
+        _ = el("playbackText").waitForExistence(timeout: 5)
+        for i in 1...4 { Thread.sleep(forTimeInterval: 1.4); shot("long-0\(i)") }
     }
 }

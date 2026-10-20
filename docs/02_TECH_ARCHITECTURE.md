@@ -173,7 +173,7 @@ SwiftUI `NavigationStack(path:)` + root tab selection を使用。`PlaybackView`
 ## 5. 責務境界
 - **View:** 画面の見た目とユーザー入力、アクセシビリティ。`AVSpeechSynthesizer` を直接作らない。
 - **VoiceEditorVM:** 入力500文字制限、空欄検証、開始要求。現在の草稿を保持。
-- **PlaybackVM:** 再生状態機械、中央ボタン動作、ハイライト位置、停止時Coordinator通知。sessionID管理。
+- **PlaybackVM:** 再生状態機械、中央ボタン動作、累積表示の進捗(`revealedUTF16`)、停止時Coordinator通知。sessionID管理。
 - **HistoryVM:** 最新100件の取得/削除/更新、保存成否表示。読み上げ詳細はCoordinatorへ渡す。
 - **SystemSpeechService:** 1インスタンスのAVSpeechSynthesizer、delegate、音声選択、stop/pause/resume実処理。
 - **DrumSoundService:** `AVAudioPlayer`プールとバンドルWAV。音量は単一設定から取得。

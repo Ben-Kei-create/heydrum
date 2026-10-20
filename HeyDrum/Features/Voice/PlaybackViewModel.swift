@@ -6,29 +6,39 @@ import Observation
 final class PlaybackViewModel {
     private(set) var state: PlaybackState = .idle
     private(set) var text = ""
-    private(set) var highlightRange: NSRange?
+    /// How much of `text` is visible, in UTF-16 units (always Character-aligned, never decreases within a session).
+    private(set) var revealedUTF16 = 0
     /// Seconds left before reading starts (nil when not counting down).
     private(set) var countdownRemaining: Int?
     @ObservationIgnored private(set) var sessionID: UUID?
     @ObservationIgnored private var countdownTask: Task<Void, Never>?
+    @ObservationIgnored private var fallbackTask: Task<Void, Never>?
+    @ObservationIgnored private var receivedRange = false
     @ObservationIgnored private let sleep: @Sendable (TimeInterval) async -> Void
+    /// If speech starts but NO range notification arrives within this time, the whole text is shown at once.
+    @ObservationIgnored private let revealFallbackDelay: TimeInterval
 
     @ObservationIgnored private let hub: SpeechSessionHub
     @ObservationIgnored private let settings: SettingsStore
 
     init(hub: SpeechSessionHub, settings: SettingsStore,
+         revealFallbackDelay: TimeInterval = 2.0,
          sleep: @escaping @Sendable (TimeInterval) async -> Void = { try? await Task.sleep(nanoseconds: UInt64($0 * 1_000_000_000)) }) {
         self.hub = hub
         self.settings = settings
+        self.revealFallbackDelay = revealFallbackDelay
         self.sleep = sleep
     }
+
+    /// The part of the text that may be shown right now.
+    var visibleText: String { TextReveal.prefix(of: text, utf16Count: revealedUTF16) }
 
     /// Starts a brand-new session for `text` (new `sessionID`; never touches history).
     func begin(text: String, delaySeconds: Int = 0) {
         self.text = text
         cancelCountdown()
         guard delaySeconds > 0 else { startSession(); return }
-        highlightRange = nil
+        resetReveal()
         state = .preparing
         countdownRemaining = delaySeconds
         countdownTask = Task { [weak self] in
@@ -64,7 +74,7 @@ final class PlaybackViewModel {
         cancelCountdown()
         if let id = sessionID { hub.end(id) }
         sessionID = nil
-        highlightRange = nil
+        resetReveal()
         state = .idle
     }
 
@@ -79,7 +89,7 @@ final class PlaybackViewModel {
         case .preparing, .speaking, .paused:
             if let id = sessionID { hub.end(id) }
             sessionID = nil
-            highlightRange = nil
+            fallbackTask?.cancel()          // unread text stays hidden after an interruption
             state = .finished
         default:
             break
@@ -87,6 +97,24 @@ final class PlaybackViewModel {
     }
 
     // MARK: Internals
+
+    private func resetReveal() {
+        fallbackTask?.cancel()
+        fallbackTask = nil
+        receivedRange = false
+        revealedUTF16 = 0
+    }
+
+    private func scheduleRevealFallback(for id: UUID) {
+        fallbackTask?.cancel()
+        fallbackTask = Task { [weak self] in
+            guard let self else { return }
+            await self.sleep(self.revealFallbackDelay)
+            if Task.isCancelled { return }
+            guard self.sessionID == id, !self.receivedRange, self.state == .speaking || self.state == .paused else { return }
+            self.revealedUTF16 = self.text.utf16.count     // no range notifications on this system: show all, no progress
+        }
+    }
 
     private func cancelCountdown() {
         countdownTask?.cancel()
@@ -98,7 +126,7 @@ final class PlaybackViewModel {
         cancelCountdown()
         if let id = sessionID { hub.end(id) }
         sessionID = nil
-        highlightRange = nil
+        resetReveal()
         state = .preparing
         do {
             sessionID = try hub.begin(
@@ -117,25 +145,37 @@ final class PlaybackViewModel {
         guard event.sessionID == sessionID else { return }   // stale session → ignore
         switch event {
         case .started:
-            if state == .preparing { state = .speaking }
+            if state == .preparing {
+                state = .speaking
+                scheduleRevealFallback(for: event.sessionID)
+            }
         case .range(_, let location, let length):
-            guard state == .speaking || state == .paused else { return }
-            let range = NSRange(location: location, length: length)
-            highlightRange = Range(range, in: text) != nil ? range : highlightRange
+            // Progress only while speaking (frozen while paused), only forward, only valid ranges.
+            guard state == .speaking, let end = TextReveal.alignedEnd(in: text, location: location, length: length) else { return }
+            receivedRange = true
+            if end > revealedUTF16 { revealedUTF16 = end }
         case .paused:
             if state == .speaking { state = .paused }
         case .resumed:
             if state == .paused { state = .speaking }
-        case .finished, .cancelled:
-            // `.cancelled` for an active session means the system cancelled it (manual stop detaches first).
+        case .finished:
             switch state {
             case .preparing, .speaking, .paused:
-                highlightRange = nil
+                revealedUTF16 = text.utf16.count        // natural end: keep the full text (incl. trailing punctuation)
+                fallbackTask?.cancel()
+                state = .finished
+            default: break
+            }
+        case .cancelled:
+            // The system cancelled the active session (manual stop detaches first): do NOT reveal unread text.
+            switch state {
+            case .preparing, .speaking, .paused:
+                fallbackTask?.cancel()
                 state = .finished
             default: break
             }
         case .failed:
-            highlightRange = nil
+            fallbackTask?.cancel()
             state = .failed("読み上げに失敗しました。")
         }
     }

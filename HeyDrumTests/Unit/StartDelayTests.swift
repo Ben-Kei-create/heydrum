@@ -123,16 +123,4 @@ final class StartDelayTests: XCTestCase {
         h.deps.coordinator.closePlayback()
         XCTAssertNil(h.deps.playback.countdownRemaining)
     }
-
-    func testPlaybackFontIsLargeAndShrinksMonotonically() {
-        var last = CGFloat.greatestFiniteMagnitude
-        for n in [1, 12, 13, 30, 31, 60, 61, 120, 121, 240, 241, 500] {
-            let size = PlaybackTextStyle.fontSize(forCharacterCount: n)
-            XCTAssertLessThanOrEqual(size, last)
-            XCTAssertGreaterThanOrEqual(size, 30, "never below 30pt")
-            last = size
-        }
-        XCTAssertGreaterThanOrEqual(PlaybackTextStyle.fontSize(forCharacterCount: 10), 80, "short phrases are huge")
-        XCTAssertGreaterThanOrEqual(PlaybackTextStyle.fontSize(forCharacterCount: 30), 60)
-    }
 }

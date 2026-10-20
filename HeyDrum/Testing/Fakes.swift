@@ -88,6 +88,11 @@ final class FakeSpeechService: SpeechProviding {
     var resumeResult = true
     /// When true, `.started` is emitted automatically after every `speak` (UI tests).
     var autoStart = false
+    /// When true (UI tests), range notifications are emitted progressively after `.started`, like the real engine.
+    var autoRanges = false
+    var chunkInterval: TimeInterval = 0.35
+    private var autoPaused = false
+    private var autoTask: Task<Void, Never>?
 
     init() {
         var c: AsyncStream<SpeechEvent>.Continuation!
@@ -104,12 +109,38 @@ final class FakeSpeechService: SpeechProviding {
     func speak(sessionID: UUID, text: String, voiceID: String?, volume: Float, speed: SpeechSpeed) throws {
         if let speakError { throw speakError }
         calls.append(SpeakCall(sessionID: sessionID, text: text, voiceID: voiceID, volume: volume, speed: speed))
+        autoTask?.cancel()
+        autoPaused = false
         if autoStart { continuation.yield(.started(sessionID: sessionID)) }
+        if autoStart && autoRanges { runAutoRanges(session: sessionID, text: text) }
     }
 
-    func pause() -> Bool { pauseCount += 1; return pauseResult }
-    func resume() -> Bool { resumeCount += 1; return resumeResult }
-    func stop() { stopCount += 1 }
+    private func runAutoRanges(session: UUID, text: String) {
+        let characters = Array(text)
+        let chunk = max(3, characters.count / 8)
+        autoTask = Task { @MainActor [weak self] in
+            var location = 0
+            var index = 0
+            while index < characters.count {
+                guard let self else { return }
+                try? await Task.sleep(nanoseconds: UInt64(self.chunkInterval * 1_000_000_000))
+                if Task.isCancelled { return }
+                while self.autoPaused {
+                    try? await Task.sleep(nanoseconds: 50_000_000)
+                    if Task.isCancelled { return }
+                }
+                let slice = characters[index..<min(index + chunk, characters.count)]
+                let length = slice.reduce(0) { $0 + String($1).utf16.count }
+                self.continuation.yield(.range(sessionID: session, location: location, length: length))
+                location += length
+                index += chunk
+            }
+        }
+    }
+
+    func pause() -> Bool { pauseCount += 1; if pauseResult { autoPaused = true }; return pauseResult }
+    func resume() -> Bool { resumeCount += 1; if resumeResult { autoPaused = false }; return resumeResult }
+    func stop() { stopCount += 1; autoTask?.cancel() }
 }
 
 @MainActor @Observable

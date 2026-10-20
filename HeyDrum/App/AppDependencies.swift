@@ -85,6 +85,7 @@ struct UITestLaunch {
     var purchased = false
     var historyCount = 0
     var sampleHistory = false
+    var chunkInterval: Double = 0.35
     var fakeSpeechAutoStart = true
 
     static func parse(_ args: [String]) -> UITestLaunch? {
@@ -92,6 +93,7 @@ struct UITestLaunch {
         var launch = UITestLaunch()
         launch.purchased = args.contains("-uitest-purchased")
         launch.sampleHistory = args.contains("-uitest-history-sample")
+        if let i = args.firstIndex(of: "-uitest-chunk-interval"), i + 1 < args.count, let v = Double(args[i + 1]) { launch.chunkInterval = v }
         if let i = args.firstIndex(of: "-uitest-history-count"), i + 1 < args.count, let n = Int(args[i + 1]) {
             launch.historyCount = n
         }
@@ -112,6 +114,8 @@ struct UITestLaunch {
         }
         let speech = FakeSpeechService()
         speech.autoStart = fakeSpeechAutoStart
+        speech.autoRanges = true
+        speech.chunkInterval = chunkInterval
         let purchase = FakePurchaseService(entitlement: purchased ? .purchased : .free)
         let defaults = UserDefaults(suiteName: "heydrum.uitest.\(UUID().uuidString)") ?? .standard
         return AppDependencies(

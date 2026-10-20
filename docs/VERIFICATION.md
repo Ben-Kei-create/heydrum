@@ -42,3 +42,14 @@ Codex 2026-10-20 findings: P0 Release guard, P0 consent gate, P1 save-in-flight 
 ## 2026-10-20 (later) — ATT / B plan
 - Unit + integration: 104 tests, 0 failures (adds AdTrackingPromptTests: ATT after consent and before SDK start; none for denied consent / purchased / unknown entitlement; purchase during the prompt stops before SDK start).
 - Real prompt checked once in the iPhone 18 Pro simulator with the live (non-fake) services: Google's consent explainer ("Continue") appeared, then the iOS tracking prompt with the Japanese `NSUserTrackingUsageDescription`. App icon confirmed on the simulator home screen. The full UI suite was not re-run after this change (it uses fake consent and is unaffected by it); simulator only, no device.
+
+## 2026-10-21 — cumulative reading display (owner change, ADR-018)
+Environment: Xcode 27.1, iPhone 18 Pro / 18 Pro Max simulators, iOS 27.0. The Mac was heavily loaded by other processes during the later runs (UI tests took far longer than usual, one run 800–1000 s); results below are from runs that completed.
+| Command | Result |
+|---|---|
+| `-only-testing:HeyDrumTests test` (fresh simulator boot) | PASS — 120 tests, 0 failures. (One earlier run, on a simulator that had been in use, failed `StoreKitPurchaseTests.testAskToBuyPendingGrantsNothing` because StoreKit products did not load; it passed on a freshly booted simulator.) |
+| `-only-testing:HeyDrumUITests test` (full, incl. new reveal/pause/countdown/Dynamic Type tests) | PASS — 25 executed, 5 screenshot-only skipped, 0 failures |
+New unit tests: PlaybackRevealTests (14), TextRevealTests (5): empty before speech/countdown, cumulative prefix growth, backward/overlapping/invalid/overflow/stale ranges, pause freezes and resume continues, natural finish shows full text, system cancel/interrupt/stop do not reveal the rest, replay/retry/new session reset, emoji/ZWJ/combining/newline alignment, fallback when no range notifications arrive, 44pt+ font table and Dynamic Type scale.
+New UI tests: progressive reveal never rewinds and ends with the full text, display freezes while paused and continues on resume, no text during countdown, 500 characters keep the newest text above the controls, text grows with Dynamic Type.
+Visual evidence: `docs/evidence/reading-reveal-sequence.png` (8 consecutive frames, iPhone 18 Pro Max simulator) and the long-text sequence checked during development (auto-scroll follows the newest text).
+Not verified: the real `AVSpeechSynthesizer` range-notification granularity on devices/voices (simulator uses fake ranges in UI tests; the real-engine integration test only checks started/finished), VoiceOver by a human, small-iPhone layout on a physical device.

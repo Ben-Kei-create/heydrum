@@ -15,14 +15,15 @@ enum PlaybackTextStyle {
         base(forCharacterCount: count) * min(max(scale, 1), 2)
     }
 
+    /// Sized from the FULL text length (known up front) so the font never changes while text is revealed.
+    /// Even 500 characters stay at 46pt or more (owner: readable from a distance).
     static func base(forCharacterCount count: Int) -> CGFloat {
         switch count {
         case ..<13: 88
-        case ..<31: 68
-        case ..<61: 54
-        case ..<121: 44
-        case ..<241: 36
-        default: 30
+        case ..<31: 72
+        case ..<61: 60
+        case ..<121: 52
+        default: 46
         }
     }
 }

@@ -79,3 +79,11 @@
 - ATT許可画面を実装(`UMPConsentService.requestTrackingAuthorization`)。順序は 同意(UMP) → ATT → 広告SDK起動。`canRequestAds` が偽・課金済み・権利未判定のときは出さない。ATT後に権利/同意を再確認してから SDK 起動。`NSUserTrackingUsageDescription` を Info.plist に追加、`PrivacyInfo.xcprivacy` は `NSPrivacyTracking=true`。
 - App Store の「トラッキングに使う」は、おおよその場所・デバイスID・製品の操作・広告データを「はい」(保守的)。プライバシーポリシーに広告ID/ATTの説明を追加。
 - ADR-012「ATTは要求しない」を置換。 **テスト:** AdTrackingPromptTests(4)。
+
+### ADR-018 / Cumulative reading display (owner change 2026-10-20)
+- **変更:** 読上げ画面を「全文表示＋下線」から「発話の進行に合わせた累積表示」へ変更。本文は開始前・カウントダウン中は非表示。`willSpeakRange` の末尾(Character境界に切り上げ)まで表示が前進する。下線/ハイライト(`TextHighlighter`)は廃止。
+- **フォント:** 全文の文字数で決まる固定サイズ(88/72/60/52/46pt)に変更し、500字でも46pt以上。再生中に縮まない。Dynamic Type(`@ScaledMetric`, 最大2倍)維持。左揃え・上寄せで既表示行は動かず、長文は最新部分へ自動スクロール。
+- **安全側の決定:** 手動停止・背景化・割込み・システム取消では未読部分を公開しない／自然終了のみ全文。`speaking`中の通知のみ反映(一時停止中は凍結)。range通知が全く来ない環境では`didStart`から2秒後に全文を一括表示(進行用タイマーではなく欠如時の安全策)。VoiceOverのラベルは表示中の文字のみ。
+- **限界(明記):** 通知は単語等のまとまり単位で、1文字ごとの音素同期ではない。実機の声・OSで通知の粒度は異なり得る（要実機確認）。
+- **要求への影響:** FR-007(MUST)をオーナーが変更。docs/00,01,02,03,04,07,09,12を整合。既存テストの「全文を初期表示」assertは仕様変更に伴い更新（削除ではなく累積表示の検証へ置換）。
+- **対応テスト:** T-009, T-046〜T-053。
