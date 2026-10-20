@@ -69,4 +69,30 @@ final class ScreenshotTests: XCTestCase {
         XCTAssertTrue(el("removeAdsButton").waitForExistence(timeout: 5))
         shot("iap-review-settings")
     }
+
+    /// Paced walkthrough (~25 s) recorded externally with `simctl io recordVideo` for the App Preview.
+    func testPreviewFlow() {
+        func pause(_ s: TimeInterval) { Thread.sleep(forTimeInterval: s) }
+        start(["-uitest-no-ads"])
+        XCTAssertTrue(el("homeDrumCard").waitForExistence(timeout: 10))
+        pause(2)
+        el("homeDrumCard").tap(); pause(1.2)
+        el("drumButton").tap(); pause(0.7)
+        el("metalButton").tap(); pause(0.7)
+        el("drumButton").tap(); pause(1.0)
+        app.navigationBars.buttons.firstMatch.tap(); pause(0.8)
+        el("homeVoiceCard").tap(); pause(1.0)
+        let editor = app.textViews["voiceTextEditor"]
+        XCTAssertTrue(editor.waitForExistence(timeout: 5))
+        editor.tap()
+        editor.typeText("本日は晴天なり"); pause(1.0)
+        el("delay-3").tap(); pause(0.8)
+        el("keyboardDismiss").tap(); pause(1.2)
+        el("voiceStartButton").tap()
+        pause(3.8)                                   // countdown 3-2-1
+        pause(4.5)                                   // reading screen
+        el("playbackStopButton").tap(); pause(1.2)
+        app.tabBars.buttons["履歴"].tap(); pause(2.2)
+        app.tabBars.buttons["設定"].tap(); pause(2.5)
+    }
 }
