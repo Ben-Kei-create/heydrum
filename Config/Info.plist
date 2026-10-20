@@ -12,6 +12,8 @@
 	<string>$(ADS_TEST_MODE)</string>
 	<key>HeyDrumRemoveAdsProductID</key>
 	<string>$(IN_APP_PURCHASE_PRODUCT_ID)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>

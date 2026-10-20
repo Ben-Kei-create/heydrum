@@ -50,7 +50,7 @@ struct PlaybackView: View {
             .frame(minHeight: 60)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.white.ignoresSafeArea(.container, edges: [.top, .horizontal]))
+        .background(Color.white.ignoresSafeArea())
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("playbackScreen")
     }
@@ -91,7 +91,6 @@ struct PlaybackView: View {
             .contentShape(Circle())
         }
         .buttonStyle(.plain)
-        .disabled(playback.state == .preparing || playback.state == .idle)
         .accessibilityLabel(centerLabel)
         .accessibilityIdentifier("playbackCenterButton")
     }

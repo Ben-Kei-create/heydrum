@@ -262,7 +262,6 @@ final class HeyDrumUITests: XCTestCase {
         XCTAssertTrue(center.waitForExistence(timeout: 5))
         XCTAssertTrue(center.label.hasPrefix("あと"), "centre control announces the countdown, got \(center.label)")
         XCTAssertTrue(el("playbackStatus").label.hasSuffix("秒後に読み上げます"), "countdown label")
-        XCTAssertFalse(el("playbackCenterButton").isEnabled, "centre button is inactive while counting down")
         el("playbackStopButton").tap()
         XCTAssertTrue(app.navigationBars["音声モード"].waitForExistence(timeout: 3))
         XCTAssertTrue(el("delay-5").isSelected, "selection is kept")

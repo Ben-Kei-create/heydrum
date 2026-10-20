@@ -33,6 +33,7 @@ struct AppShellView: View {
                     .tag(AppTab.settings)
             }
             .tint(Palette.primaryOrange)
+            .toolbar(coordinator.isPlaybackVisible ? .hidden : .automatic, for: .tabBar)
             .accessibilityHidden(coordinator.isPlaybackVisible)
 
             if coordinator.isPlaybackVisible {

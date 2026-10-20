@@ -84,12 +84,14 @@ final class AppDependencies {
 struct UITestLaunch {
     var purchased = false
     var historyCount = 0
+    var sampleHistory = false
     var fakeSpeechAutoStart = true
 
     static func parse(_ args: [String]) -> UITestLaunch? {
         guard args.contains("-uitest") else { return nil }
         var launch = UITestLaunch()
         launch.purchased = args.contains("-uitest-purchased")
+        launch.sampleHistory = args.contains("-uitest-history-sample")
         if let i = args.firstIndex(of: "-uitest-history-count"), i + 1 < args.count, let n = Int(args[i + 1]) {
             launch.historyCount = n
         }
@@ -99,7 +101,13 @@ struct UITestLaunch {
     @MainActor
     func makeDependencies(config: AppConfig) -> AppDependencies {
         let base = Date(timeIntervalSince1970: 1_800_000_000)
-        let items = (0..<historyCount).map { i in
+        let samples = ["本日は晴天なり", "いってらっしゃい", "お疲れさまでした", "また明日", "次は13時45分です", "ご来店ありがとうございました"]
+        let now = Date()
+        let sampleItems = samples.enumerated().map { i, text in
+            let t = now.addingTimeInterval(-Double(i) * 1800)
+            return HistoryEntry(id: UUID(), text: text, createdAt: t, lastPlayedAt: t)
+        }
+        let items = sampleHistory ? sampleItems : (0..<historyCount).map { i in
             HistoryEntry(id: UUID(), text: "履歴テスト\(i + 1)", createdAt: base.addingTimeInterval(Double(i)), lastPlayedAt: base.addingTimeInterval(Double(i)))
         }
         let speech = FakeSpeechService()

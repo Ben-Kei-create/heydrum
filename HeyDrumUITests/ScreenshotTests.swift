@@ -1,0 +1,72 @@
+import XCTest
+
+/// Produces the App Store screenshots. Not part of the normal regression run:
+/// TEST_RUNNER_SHOT_DIR=/path xcodebuild ... -only-testing:HeyDrumUITests/ScreenshotTests test
+final class ScreenshotTests: XCTestCase {
+    private var app: XCUIApplication!
+    private var dir: String { ProcessInfo.processInfo.environment["SHOT_DIR"] ?? "" }
+
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        try XCTSkipIf(dir.isEmpty, "SHOT_DIR not set")
+        try? FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+        app = XCUIApplication()
+    }
+
+    private func start(_ extra: [String] = []) {
+        app.launchArguments = ["-uitest", "-uitest-purchased", "-uitest-history-sample"] + extra + ["-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+    }
+
+    private func el(_ id: String) -> XCUIElement { app.descendants(matching: .any).matching(identifier: id).firstMatch }
+
+    private func shot(_ name: String) {
+        Thread.sleep(forTimeInterval: 0.8)
+        try? app.screenshot().pngRepresentation.write(to: URL(fileURLWithPath: "\(dir)/\(name).png"))
+    }
+
+    func testCaptureAll() {
+        start()
+        XCTAssertTrue(el("homeDrumCard").waitForExistence(timeout: 10))
+        shot("01-home")
+
+        el("homeDrumCard").tap()
+        XCTAssertTrue(el("drumButton").waitForExistence(timeout: 5))
+        shot("02-drum")
+        app.navigationBars.buttons.firstMatch.tap()
+
+        el("homeVoiceCard").tap()
+        let editor = app.textViews["voiceTextEditor"]
+        XCTAssertTrue(editor.waitForExistence(timeout: 5))
+        editor.tap()
+        editor.typeText("本日は晴天なり")
+        el("delay-5").tap()
+        el("keyboardDismiss").tap()
+        shot("03-voice")
+
+        el("voiceStartButton").tap()
+        XCTAssertTrue(el("playbackCenterButton").waitForExistence(timeout: 5))
+        Thread.sleep(forTimeInterval: 1.2)
+        shot("04-countdown")
+        Thread.sleep(forTimeInterval: 5)
+        shot("05-reading")
+        el("playbackStopButton").tap()
+
+        app.tabBars.buttons["履歴"].tap()
+        XCTAssertTrue(el("historyList").waitForExistence(timeout: 5))
+        shot("06-history")
+
+        app.tabBars.buttons["設定"].tap()
+        XCTAssertTrue(el("volumeSlider").waitForExistence(timeout: 5))
+        shot("07-settings")
+    }
+
+    /// App Review screenshot for the in-app purchase (free state with the purchase row visible).
+    func testCaptureIAPReview() {
+        app.launchArguments = ["-uitest", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        app.tabBars.buttons["設定"].tap()
+        XCTAssertTrue(el("removeAdsButton").waitForExistence(timeout: 5))
+        shot("iap-review-settings")
+    }
+}
