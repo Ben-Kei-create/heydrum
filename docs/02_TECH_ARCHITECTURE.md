@@ -67,7 +67,7 @@ struct HistoryEntry: Identifiable, Codable, Equatable, Sendable {
 }
 
 struct AppSettings: Codable, Equatable, Sendable {
-    var masterVolume: Float = 0.70  // 0...1
+    var masterVolume: Float = 1.0  // 0...1 (default = max since 2026-10-22)
     var speechSpeed: SpeechSpeed = .normal
     var preferredVoiceIdentifier: String? = nil
 }

@@ -13,6 +13,8 @@ enum PlaybackState: Equatable {
 enum PlaybackSource: Equatable {
     case editor
     case history(id: UUID)
+    /// Launch greeting ("ドラム" in Eddy's voice). Not saved in history; closes itself.
+    case greeting
 }
 
 struct PlaybackRequest: Identifiable, Equatable {

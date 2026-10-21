@@ -126,4 +126,14 @@ final class ScreenshotTests: XCTestCase {
         _ = el("playbackText").waitForExistence(timeout: 5)
         for i in 1...4 { Thread.sleep(forTimeInterval: 1.4); shot("long-0\(i)") }
     }
+
+    /// Evidence for the launch greeting: "ドラム" appears with the voice, no controls.
+    func testGreetingShot() {
+        app.launchArguments = ["-uitest", "-uitest-greeting", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launch()
+        XCTAssertTrue(el("playbackScreen").waitForExistence(timeout: 10))
+        let predicate = NSPredicate(format: "label == %@", "ドラム")
+        _ = XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: el("playbackText"))], timeout: 8)
+        try? app.screenshot().pngRepresentation.write(to: URL(fileURLWithPath: "\(dir)/greeting.png"))
+    }
 }

@@ -12,6 +12,10 @@ final class PlaybackViewModel {
     private(set) var countdownRemaining: Int?
     @ObservationIgnored private(set) var sessionID: UUID?
     @ObservationIgnored private var countdownTask: Task<Void, Never>?
+    /// Used instead of the user's preferred voice for this session (launch greeting).
+    @ObservationIgnored private var voiceOverride: String?
+    /// Called when the session ends by itself (finished / system-cancelled / failed). Not called for manual stop.
+    @ObservationIgnored var onSessionEnd: (() -> Void)?
     @ObservationIgnored private var fallbackTask: Task<Void, Never>?
     @ObservationIgnored private var receivedRange = false
     @ObservationIgnored private let sleep: @Sendable (TimeInterval) async -> Void
@@ -34,8 +38,9 @@ final class PlaybackViewModel {
     var visibleText: String { TextReveal.prefix(of: text, utf16Count: revealedUTF16) }
 
     /// Starts a brand-new session for `text` (new `sessionID`; never touches history).
-    func begin(text: String, delaySeconds: Int = 0) {
+    func begin(text: String, delaySeconds: Int = 0, voiceOverride: String? = nil) {
         self.text = text
+        self.voiceOverride = voiceOverride
         cancelCountdown()
         guard delaySeconds > 0 else { startSession(); return }
         resetReveal()
@@ -130,14 +135,16 @@ final class PlaybackViewModel {
         state = .preparing
         do {
             sessionID = try hub.begin(
-                text: text, voiceID: settings.preferredVoiceID,
+                text: text, voiceID: voiceOverride ?? settings.preferredVoiceID,
                 volume: settings.masterVolume, speed: settings.speechSpeed,
                 onEvent: { [weak self] event in self?.handle(event) }
             )
         } catch SpeechError.noJapaneseVoice {
             state = .failed("日本語の音声が見つかりません。iOSの設定で日本語音声を追加してください。")
+            onSessionEnd?()
         } catch {
             state = .failed("読み上げを開始できませんでした。")
+            onSessionEnd?()
         }
     }
 
@@ -164,6 +171,7 @@ final class PlaybackViewModel {
                 revealedUTF16 = text.utf16.count        // natural end: keep the full text (incl. trailing punctuation)
                 fallbackTask?.cancel()
                 state = .finished
+                onSessionEnd?()
             default: break
             }
         case .cancelled:
@@ -172,11 +180,13 @@ final class PlaybackViewModel {
             case .preparing, .speaking, .paused:
                 fallbackTask?.cancel()
                 state = .finished
+                onSessionEnd?()
             default: break
             }
         case .failed:
             fallbackTask?.cancel()
             state = .failed("読み上げに失敗しました。")
+            onSessionEnd?()
         }
     }
 }

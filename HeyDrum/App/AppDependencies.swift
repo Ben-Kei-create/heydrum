@@ -16,6 +16,10 @@ final class AppDependencies {
     let preview: VoicePreviewController
     let keyboard = KeyboardObserver()
     let ads: AdMobManager
+    /// Launch greeting is on for the real app; UI-test launches turn it off unless `-uitest-greeting` is passed.
+    var launchGreetingEnabled = true
+    /// How long the spoken word stays on screen after the voice ends (UI tests lengthen it).
+    var greetingHold: TimeInterval = 0.9
 
     init(config: AppConfig, settings: SettingsStore, sound: SoundProviding, speech: SpeechProviding,
          historyRepository: HistoryRepository, purchase: PurchaseProviding, ads: AdMobManager,
@@ -69,6 +73,7 @@ final class AppDependencies {
     /// Everything that must run once at launch. None of it blocks the UI (UC-01).
     func startUp() async {
         try? sound.preload()
+        if launchGreetingEnabled { coordinator.startGreeting(voices: speech.availableJapaneseVoices(), hold: greetingHold) }
         async let historyLoad: Void = history.reload()
         purchase.startObservingTransactions()
         async let products: Void = purchase.loadProduct()
@@ -85,6 +90,7 @@ struct UITestLaunch {
     var purchased = false
     var historyCount = 0
     var sampleHistory = false
+    var greeting = false
     var chunkInterval: Double = 0.35
     var fakeSpeechAutoStart = true
 
@@ -93,6 +99,7 @@ struct UITestLaunch {
         var launch = UITestLaunch()
         launch.purchased = args.contains("-uitest-purchased")
         launch.sampleHistory = args.contains("-uitest-history-sample")
+        launch.greeting = args.contains("-uitest-greeting")
         if let i = args.firstIndex(of: "-uitest-chunk-interval"), i + 1 < args.count, let v = Double(args[i + 1]) { launch.chunkInterval = v }
         if let i = args.firstIndex(of: "-uitest-history-count"), i + 1 < args.count, let n = Int(args[i + 1]) {
             launch.historyCount = n
@@ -118,7 +125,11 @@ struct UITestLaunch {
         speech.chunkInterval = chunkInterval
         let purchase = FakePurchaseService(entitlement: purchased ? .purchased : .free)
         let defaults = UserDefaults(suiteName: "heydrum.uitest.\(UUID().uuidString)") ?? .standard
-        return AppDependencies(
+        if greeting {
+            speech.voices.append(SpeechVoiceOption(id: "fake.eddy", displayName: "Eddy"))
+            speech.autoFinish = true
+        }
+        let deps = AppDependencies(
             config: config,
             settings: SettingsStore(defaults: defaults),
             sound: FakeSoundService(),
@@ -127,6 +138,9 @@ struct UITestLaunch {
             purchase: purchase,
             ads: AdMobManager(config: config, purchase: purchase, consent: FakeConsentService(canRequestAds: false), sdk: FakeAdSDK())
         )
+        deps.launchGreetingEnabled = greeting
+        deps.greetingHold = 6
+        return deps
     }
 }
 #endif

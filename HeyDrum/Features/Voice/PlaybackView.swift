@@ -7,6 +7,7 @@ struct PlaybackView: View {
     @Environment(PlaybackViewModel.self) private var playback
     /// 1.0 at the default text size; grows with the user's Dynamic Type setting.
     @ScaledMetric(relativeTo: .largeTitle) private var typeScale: CGFloat = 1
+    private var isGreeting: Bool { coordinator.request?.source == .greeting }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -39,6 +40,7 @@ struct PlaybackView: View {
             }
 
             VStack(spacing: 12) {
+                if !isGreeting {
                 Text(statusText)
                     .font(.footnote)
                     .foregroundStyle(Palette.muted)
@@ -50,6 +52,7 @@ struct PlaybackView: View {
                         .foregroundStyle(Color(hex: 0xB3261E))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 28)
+                }
                 }
             }
             .padding(.top, 8)
@@ -64,6 +67,8 @@ struct PlaybackView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.white.ignoresSafeArea())
+        .contentShape(Rectangle())
+        .onTapGesture { if isGreeting { coordinator.closePlayback() } }     // tap skips the launch greeting
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("playbackScreen")
     }

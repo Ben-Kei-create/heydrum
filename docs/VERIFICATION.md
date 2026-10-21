@@ -53,3 +53,11 @@ New unit tests: PlaybackRevealTests (14), TextRevealTests (5): empty before spee
 New UI tests: progressive reveal never rewinds and ends with the full text, display freezes while paused and continues on resume, no text during countdown, 500 characters keep the newest text above the controls, text grows with Dynamic Type.
 Visual evidence: `docs/evidence/reading-reveal-sequence.png` (8 consecutive frames, iPhone 18 Pro Max simulator) and the long-text sequence checked during development (auto-scroll follows the newest text).
 Not verified: the real `AVSpeechSynthesizer` range-notification granularity on devices/voices (simulator uses fake ranges in UI tests; the real-engine integration test only checks started/finished), VoiceOver by a human, small-iPhone layout on a physical device.
+
+## 2026-10-22 — default max volume, half speed, launch greeting (ADR-019/020)
+| Command | Result |
+|---|---|
+| `-only-testing:HeyDrumTests test` | PASS — 133 tests, 0 failures (new: GreetingTests 11, default-volume and half-speed rate tests; the real-engine range test passed in 6.5 s: real `AVSpeechSynthesizer` sends several forward ranges) |
+| `-only-testing:HeyDrumUITests test` (SHOT_DIR set, so screenshot tests ran too) | PASS — 28 tests, 0 failures (new: greeting appears with "ドラム", no controls, closes itself; tap skips it; volume slider shows 100%) |
+Evidence: `docs/evidence/launch-greeting.png`. Store screenshots/IAP image recaptured (settings now shows 100% volume).
+NOT verified: the actual sound of Eddy (only names/ids and event flow; Eddy is matched by name and the Mac lists `Eddy` as ja-JP, the simulator voice list was not printed), whether the new rates really sound like half speed (T-057 needs ears on a device), the greeting on a physical device. The App Preview video was not re-made (it still shows 70%-era settings and no greeting).

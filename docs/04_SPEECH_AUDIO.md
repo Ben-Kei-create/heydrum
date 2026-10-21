@@ -3,7 +3,7 @@
 ## 1. 音声合成: Apple内蔵APIのみ
 - `AVSpeechSynthesizer` 1個を `SystemSpeechService` のライフタイムで保持し、`AVSpeechSynthesizerDelegate` を受け取る。インスタンスをタップごとに破棄しない。
 - 各セッション1 `AVSpeechUtterance(string: normalizedText)`。`utterance.voice = AVSpeechSynthesisVoice(identifier: configuredVoiceID)`、利用不可なら `AVSpeechSynthesisVoice(language:"ja-JP")`、それも不可ならユーザーにエラー。
-- `utterance.rate` は3段階の保守的な値。初期案: `slow = 0.43`、`normal = 0.50`、`fast = 0.57`。OS APIの `AVSpeechUtteranceMinimumSpeechRate` / Maximumでclamp。最終的には**実機試聴**で調整。
+- `utterance.rate` は3段階の保守的な値。**v1.2（オーナー指示 2026-10-22「いまの約1/2の速さに」）: `slow = 0.20`、`normal = 0.25`、`fast = 0.32`**（従来は 0.43 / 0.50 / 0.57。`normal` は従来のシステム既定0.5の半分）。実際の速さの体感・倍率は端末の声で異なるため、実機で聴いて調整する。OS APIの `AVSpeechUtteranceMinimumSpeechRate` / Maximumでclamp。最終的には**実機試聴**で調整。
 - `utterance.pitchMultiplier = 1.08` を初期案とする。女性風・ロボット風はOSが提供する具体声質で決まるため、ピッチ操作単独で女性声と保証しない。極端なピッチ変更は禁止。
 - `utterance.volume = max(0,min(1,settings.masterVolume))`。マスター音量0%時にもイベントは正常終了。
 - `preUtteranceDelay = 0`。長文500文字で句読点・改行を保持。
@@ -40,7 +40,7 @@
 
 ## 4. 音声周りのOS設定
 - 音声が主目的なので基本は `AVAudioSession.sharedInstance().setCategory(.playback, options:[.mixWithOthers])`、必要時にactivationし終了後可能な場合deactivation。
-- Silent switchでも音が鳴る挙動を選ぶ。端末音量・イヤホン・Bluetooth・AirPlayはシステムに従う。**出音を大きくしすぎない**（ユーザー音量70%初期値）。
+- Silent switchでも音が鳴る挙動を選ぶ。端末音量・イヤホン・Bluetooth・AirPlayはシステムに従う。**出音を大きくしすぎない**（初期値は最大100%。端末側の音量はシステムに従う）。
 - v1は背景再生なし。`UIBackgroundModes` のaudioを有効にしない。`scenePhase == .background` で停止。画面ロックも背景停止。
 - `AVAudioSession.interruptionNotification` を監視。通話/Siri等の割込み時は発話を停止（勝手に再開しない）。停止の後でも新しいsessionが使えるよう再設定。
 - 音量の端末側0やBluetooth切断は故障ではない。再生状態はAPI結果に基づき更新。
@@ -61,3 +61,9 @@
 - `こんにちは` / `本日は晴天なり` / `次は13時45分` / `酸化と還元` / `こんにちは😀。` / `あいうえお\nかきくけこ` / `東京2026年`。
 - セッション開始0秒、pause/resume、stop即時、完了、再生途中で画面背景化/電話着信、連続10回発話。
 - ピッチと速度は**同じ端末・音量で**試聴比較。女性ロボット風が実現できない場合、曖昧に実装完了とせず、選択音声の限界を記録。
+
+## 8. 起動時あいさつ「ドラム」（v1.2、オーナー指示 2026-10-22）
+- アプリの起動（プロセス起動）ごとに、読上げ画面と同じ表示で、**Appleの日本語ボイス「Eddy」**が「ドラム」と読み上げる。文字は読み上げと同時に表示（累積表示と同じ仕組み。開始前は非表示）。
+- Eddyは**名前（`Eddy`）で照合**し、識別子は推測・固定しない。端末にEddyが無い場合は既定のja-JP声で読み上げる。ユーザーが選んだ声には影響せず、通常の読み上げは従来どおりユーザーの声。音量は設定値（初期100%）、速度は設定値。
+- 履歴には保存しない。中央ボタン・状態表示は出さない。声が終わって約0.9秒で自動的にホームへ。画面タップ／右下「停止」でスキップ。最長6秒で必ず閉じる（閉じ込め防止）。背景化・割込みで停止し再開しない。日本語音声が全く無い場合は何もせず、そのままホーム。
+- 他の画面（読み上げ中・同意フォーム等）が既に出ている場合は割り込まない。広告フッターの位置・課金/同意ゲートは通常どおり。

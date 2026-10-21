@@ -56,7 +56,7 @@
 - concurrent append/markPlayedをactorで直列化し更新消失を防ぐ。テストで50操作並列実行。
 
 ## 7. 設定
-`UserDefaults` にバージョン化したキー `heydrum.masterVolume`, `heydrum.speechSpeed`, `heydrum.preferredVoiceID`。default volume `0.70`。範囲外値はclamp。保存済みvoiceが消えたらja-JPにfallback。**広告購入状態はUserDefaultsへ保存してもよいがそれを正本にしない**。真の権利はStoreKit2のverified transactions。
+`UserDefaults` にバージョン化したキー `heydrum.masterVolume`, `heydrum.speechSpeed`, `heydrum.preferredVoiceID`。default volume `1.0`（最大。2026-10-22〜。以前は0.70）。範囲外値はclamp。保存済みvoiceが消えたらja-JPにfallback。**広告購入状態はUserDefaultsへ保存してもよいがそれを正本にしない**。真の権利はStoreKit2のverified transactions。
 
 ## 8. ログ・分析
 読み上げ本文、履歴、selected voice ID、広告トラッキングIDを外部に送信する独自コードを追加しない。`print`/`os_log`にも本文を出さない。AdMob広告SDKが独自に収集する項目はリリース時にSDKの公式プライバシー説明と照合する。

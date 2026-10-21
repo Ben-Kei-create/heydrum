@@ -28,3 +28,5 @@
 FR-001 HomeView · FR-002 DrumView/DrumSoundService · FR-004 VoiceEditorViewModel/SpeechText · FR-005/006 SystemSpeechService + SpeechSessionHub · FR-007/008 PlaybackView/PlaybackViewModel/AppCoordinator · FR-009/010/011 JSONHistoryRepository/HistoryViewModel · FR-012 AppShellView/AdSlotView/AdMobManager · FR-013/014 StoreKitPurchaseService/SettingsView · FR-015 SettingsStore/SettingsView · Tests: see docs/VERIFICATION.md (status per test ID).
 
 v1.1 (owner change 2026-10-20): FR-007 累積表示/大きな文字 → TextReveal, PlaybackViewModel(revealedUTF16), PlaybackView, PlaybackTextStyle → T-009/T-046〜T-053 (PlaybackRevealTests, TextRevealTests, HeyDrumUITests).
+
+v1.2 (owner 2026-10-22): 音量初期100% → AppSettings.defaultVolume (T-054) / 速度1/2 → SpeechSpeed.utteranceRate (T-055) / 起動時あいさつ(FR-019) → AppCoordinator.startGreeting, GreetingVoice, PlaybackView(.greeting) (T-056, T-057実機)。

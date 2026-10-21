@@ -252,7 +252,7 @@ final class HeyDrumUITests: XCTestCase {
         launch()
         tab("設定").tap()
         XCTAssertTrue(el("volumeSlider").waitForExistence(timeout: 3))
-        XCTAssertEqual(el("volumeSlider").value as? String, "70パーセント")
+        XCTAssertEqual(el("volumeSlider").value as? String, "100パーセント")
         XCTAssertTrue(el("speedPicker").exists)
         XCTAssertTrue(el("voicePreviewButton").exists)
         app.swipeUp()
@@ -363,5 +363,21 @@ final class HeyDrumUITests: XCTestCase {
         XCTAssertTrue(el("playbackText").waitForExistence(timeout: 5))
         XCTAssertTrue(el("playbackCenterButton").label.hasPrefix("あと"), "centre label was '\(el("playbackCenterButton").label)', status '\(el("playbackStatus").label)'")
         XCTAssertEqual(el("playbackText").label, "読み上げ待機中", "no part of the text is visible while counting down")
+    }
+
+    // Launch greeting
+    func testLaunchGreetingShowsDoramuThenGoesHome() {
+        launch(["-uitest-greeting"])
+        XCTAssertTrue(el("playbackScreen").waitForExistence(timeout: 10), "greeting screen appears at launch")
+        waitForReadingText("ドラム", timeout: 8)
+        XCTAssertFalse(el("playbackCenterButton").exists, "no pause/resume controls on the greeting")
+        XCTAssertTrue(el("homeDrumCard").waitForExistence(timeout: 20), "the greeting closes by itself and shows Home")
+    }
+
+    func testTappingTheGreetingSkipsIt() {
+        launch(["-uitest-greeting"])
+        XCTAssertTrue(el("playbackScreen").waitForExistence(timeout: 10))
+        el("playbackScreen").tap()
+        XCTAssertTrue(el("homeDrumCard").waitForExistence(timeout: 5))
     }
 }

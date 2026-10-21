@@ -27,15 +27,41 @@ final class AppCoordinator {
         guard request == nil else { return }
         sound.stopAll()
         request = PlaybackRequest(text: text, source: source)
+        playback.onSessionEnd = nil
         playback.begin(text: text, delaySeconds: delaySeconds)
+    }
+
+    /// Launch greeting: "ドラム" in Eddy's voice with the text shown as it is spoken. Skipped if anything is
+    /// already on screen or no Japanese voice exists. Closes itself shortly after the voice ends (or on tap/stop).
+    func startGreeting(voices: [SpeechVoiceOption], hold: TimeInterval = 0.9, maxDuration: TimeInterval = 6) {
+        guard request == nil else { return }
+        let eddy = GreetingVoice.identifier(in: voices)
+        sound.stopAll()
+        let greeting = PlaybackRequest(text: GreetingVoice.text, source: .greeting)
+        request = greeting
+        playback.onSessionEnd = { [weak self] in
+            Task { @MainActor [weak self] in
+                try? await Task.sleep(nanoseconds: UInt64(hold * 1_000_000_000))
+                guard self?.request?.id == greeting.id else { return }
+                self?.closePlayback()
+            }
+        }
+        playback.begin(text: greeting.text, voiceOverride: eddy)
+        Task { @MainActor [weak self] in                  // safety net: never trap the user on the greeting
+            try? await Task.sleep(nanoseconds: UInt64(maxDuration * 1_000_000_000))
+            guard self?.request?.id == greeting.id else { return }
+            self?.closePlayback()
+        }
     }
 
     /// Stops speech and returns to where playback was opened from. Idempotent (no double pop).
     func closePlayback() {
         guard let current = request else { return }
+        playback.onSessionEnd = nil
         playback.stop()
         request = nil
         switch current.source {
+        case .greeting: selectedTab = .home
         case .editor: selectedTab = .home
         case .history: selectedTab = .history
         }

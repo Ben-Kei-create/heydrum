@@ -6,9 +6,10 @@ import AVFoundation
 final class SettingsStoreTests: XCTestCase {
     private func defaults() -> UserDefaults { UserDefaults(suiteName: "heydrum.tests.\(UUID().uuidString)")! }
 
-    func testDefaultsAreSeventyPercentNormalSpeedNoVoice() {
+    func testDefaultsAreMaximumVolumeNormalSpeedNoVoice() {
         let s = SettingsStore(defaults: defaults())
-        XCTAssertEqual(s.masterVolume, 0.70)
+        XCTAssertEqual(s.masterVolume, 1.0, "owner: starts at maximum app volume")
+        XCTAssertEqual(AppSettings.defaultVolume, 1.0)
         XCTAssertEqual(s.speechSpeed, .normal)
         XCTAssertNil(s.preferredVoiceID)
     }
@@ -39,6 +40,13 @@ final class SettingsStoreTests: XCTestCase {
         XCTAssertEqual(s.masterVolume, 0)
         s.masterVolume = .nan
         XCTAssertEqual(s.masterVolume, AppSettings.defaultVolume)
+    }
+
+    func testSpeechRatesAreHalfOfThePreviousSpeed() {
+        // Previous rates were 0.43 / 0.50 / 0.57 (normal = system default 0.5). Owner: about half → ~0.25.
+        XCTAssertEqual(SpeechSpeed.normal.utteranceRate, 0.25, accuracy: 0.001)
+        XCTAssertLessThanOrEqual(SpeechSpeed.fast.utteranceRate, 0.35, "even 'fast' is far slower than before")
+        XCTAssertLessThan(SpeechSpeed.slow.utteranceRate, SpeechSpeed.normal.utteranceRate)
     }
 
     func testSpeechRatesAreOrderedAndWithinSystemRange() {

@@ -90,6 +90,8 @@ final class FakeSpeechService: SpeechProviding {
     var autoStart = false
     /// When true (UI tests), range notifications are emitted progressively after `.started`, like the real engine.
     var autoRanges = false
+    /// When true (UI tests), `.finished` follows the last range.
+    var autoFinish = false
     var chunkInterval: TimeInterval = 0.35
     private var autoPaused = false
     private var autoTask: Task<Void, Never>?
@@ -135,6 +137,7 @@ final class FakeSpeechService: SpeechProviding {
                 location += length
                 index += chunk
             }
+            if self?.autoFinish == true { self?.continuation.yield(.finished(sessionID: session)) }
         }
     }
 

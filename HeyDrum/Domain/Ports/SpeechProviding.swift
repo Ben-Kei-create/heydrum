@@ -1,5 +1,14 @@
 import Foundation
 
+enum GreetingVoice {
+    /// The launch greeting uses Apple's "Eddy" Japanese voice. Matched by NAME (never a guessed identifier);
+    /// nil when it is not installed (the default Japanese voice is then used).
+    static func identifier(in voices: [SpeechVoiceOption]) -> String? {
+        voices.first(where: { $0.displayName == "Eddy" || $0.displayName.hasPrefix("Eddy（") || $0.displayName.hasPrefix("Eddy (") })?.id
+    }
+    static let text = "ドラム"
+}
+
 struct SpeechVoiceOption: Identifiable, Equatable, Sendable {
     let id: String               // AVSpeechSynthesisVoice.identifier
     let displayName: String
