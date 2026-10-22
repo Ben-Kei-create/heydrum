@@ -19,8 +19,8 @@
 | プライマリカテゴリ | ユーティリティ |
 | セカンダリカテゴリ | 仕事効率化（任意） |
 | 著作権 | `2026 ★お名前` |
-| プライバシーポリシーURL | ★公開した `https://…/privacy-policy.html` |
-| サポートURL | ★公開した `https://…/`（`site/index.html`） |
+| プライバシーポリシーURL | https://ben-kei-create.github.io/heydrum-site/privacy-policy.html |
+| サポートURL | https://ben-kei-create.github.io/heydrum-site/ |
 | マーケティングURL | 空欄でよい |
 | 年齢制限 | すべての質問に「なし」→ 4+ |
 | コンテンツ配信権 | **第三者のコンテンツを含む → 「はい、必要な権利を保有しています」**（同梱フォント3種はオープンライセンス: M PLUS 1・WDXL Lubrifont JP N＝SIL OFL 1.1、Kosugi Maru＝Apache 2.0。ライセンス全文はアプリ内「設定>フォントのライセンス」に掲載。効果音は自作、アイコンはオーナー提供）。 |

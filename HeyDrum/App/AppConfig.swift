@@ -6,8 +6,8 @@ struct AppConfig: Equatable, Sendable {
     let adsTestMode: Bool
     let removeAdsProductID: String
 
-    /// Owner must set this before release (docs/11). While nil, Settings shows the in-app summary only.
-    static let privacyPolicyURL: URL? = nil
+    /// Public policy page (GitHub Pages, published 2026-10-22). Shown as a link in Settings > プライバシーポリシー.
+    static let privacyPolicyURL: URL? = URL(string: "https://ben-kei-create.github.io/heydrum-site/privacy-policy.html")
 
     static func from(bundle: Bundle = .main) -> AppConfig {
         func string(_ key: String) -> String {
