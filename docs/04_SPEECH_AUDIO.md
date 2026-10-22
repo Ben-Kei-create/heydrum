@@ -3,7 +3,7 @@
 ## 1. 音声合成: Apple内蔵APIのみ
 - `AVSpeechSynthesizer` 1個を `SystemSpeechService` のライフタイムで保持し、`AVSpeechSynthesizerDelegate` を受け取る。インスタンスをタップごとに破棄しない。
 - 各セッション1 `AVSpeechUtterance(string: normalizedText)`。`utterance.voice = AVSpeechSynthesisVoice(identifier: configuredVoiceID)`、利用不可なら `AVSpeechSynthesisVoice(language:"ja-JP")`、それも不可ならユーザーにエラー。
-- `utterance.rate` は3段階の保守的な値。**v1.2（オーナー指示 2026-10-22「いまの約1/2の速さに」）: `slow = 0.20`、`normal = 0.25`、`fast = 0.32`**（従来は 0.43 / 0.50 / 0.57。`normal` は従来のシステム既定0.5の半分）。実際の速さの体感・倍率は端末の声で異なるため、実機で聴いて調整する。OS APIの `AVSpeechUtteranceMinimumSpeechRate` / Maximumでclamp。最終的には**実機試聴**で調整。
+- `utterance.rate` は3段階の保守的な値。**v1.2（オーナー指示 2026-10-22「いまの約1/2の速さに」）: `slow = 0.0`、`normal = 0.10`、`fast = 0.25`**（従来は 0.43 / 0.50 / 0.57）。**rateは線形ではなく声によって効きが違う**ため、実エンジンで実測して決めた（同一31文字、従来normal=0.50との所要時間比）: Eddy 0.25→1.46倍／0.10→1.9倍／0.0→2.3倍、Kyoko(コンパクト) 0.25→1.2倍／0.10→1.5倍／0.0→1.7倍。したがって「ちょうど半分」はEddyのnormalでほぼ達成、Kyokoでは約1.5倍が限界。それ以上遅くするには文の区切りに間(ポーズ)を入れる必要がある（未実装）。OS APIの `AVSpeechUtteranceMinimumSpeechRate` / Maximumでclamp。最終的には**実機試聴**で調整。
 - `utterance.pitchMultiplier = 1.08` を初期案とする。女性風・ロボット風はOSが提供する具体声質で決まるため、ピッチ操作単独で女性声と保証しない。極端なピッチ変更は禁止。
 - `utterance.volume = max(0,min(1,settings.masterVolume))`。マスター音量0%時にもイベントは正常終了。
 - `preUtteranceDelay = 0`。長文500文字で句読点・改行を保持。

@@ -91,6 +91,8 @@ struct UITestLaunch {
     var historyCount = 0
     var sampleHistory = false
     var greeting = false
+    var readingFont = ReadingFont.system
+    var textScale = 1.0
     var chunkInterval: Double = 0.35
     var fakeSpeechAutoStart = true
 
@@ -100,6 +102,8 @@ struct UITestLaunch {
         launch.purchased = args.contains("-uitest-purchased")
         launch.sampleHistory = args.contains("-uitest-history-sample")
         launch.greeting = args.contains("-uitest-greeting")
+        if let i = args.firstIndex(of: "-uitest-reading-font"), i + 1 < args.count { launch.readingFont = ReadingFont.from(args[i + 1]) }
+        if let i = args.firstIndex(of: "-uitest-text-scale"), i + 1 < args.count, let v = Double(args[i + 1]) { launch.textScale = v }
         if let i = args.firstIndex(of: "-uitest-chunk-interval"), i + 1 < args.count, let v = Double(args[i + 1]) { launch.chunkInterval = v }
         if let i = args.firstIndex(of: "-uitest-history-count"), i + 1 < args.count, let n = Int(args[i + 1]) {
             launch.historyCount = n
@@ -129,9 +133,12 @@ struct UITestLaunch {
             speech.voices.append(SpeechVoiceOption(id: "fake.eddy", displayName: "Eddy"))
             speech.autoFinish = true
         }
+        let store = SettingsStore(defaults: defaults)
+        store.readingFont = readingFont
+        store.readingTextScale = textScale
         let deps = AppDependencies(
             config: config,
-            settings: SettingsStore(defaults: defaults),
+            settings: store,
             sound: FakeSoundService(),
             speech: speech,
             historyRepository: InMemoryHistoryRepository(items: items),

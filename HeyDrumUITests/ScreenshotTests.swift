@@ -136,4 +136,26 @@ final class ScreenshotTests: XCTestCase {
         _ = XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: el("playbackText"))], timeout: 8)
         try? app.screenshot().pngRepresentation.write(to: URL(fileURLWithPath: "\(dir)/greeting.png"))
     }
+
+    /// The reading screen in every selectable font (same text, same size).
+    func testFontSamples() {
+        for font in ["system", "mplus1", "kosugiMaru", "lubrifont"] {
+            app = XCUIApplication()
+            app.launchArguments = ["-uitest", "-uitest-purchased", "-uitest-reading-font", font, "-uitest-chunk-interval", "0.15", "-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+            app.launch()
+            XCTAssertTrue(el("homeVoiceCard").waitForExistence(timeout: 10))
+            el("homeVoiceCard").tap()
+            let editor = app.textViews["voiceTextEditor"]
+            XCTAssertTrue(editor.waitForExistence(timeout: 5))
+            editor.tap()
+            editor.typeText("本日は晴天なり。一時停止、ドラム")
+            el("keyboardDismiss").tap()
+            el("voiceStartButton").tap()
+            let predicate = NSPredicate(format: "label == %@", "本日は晴天なり。一時停止、ドラム")
+            _ = XCTWaiter().wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: el("playbackText"))], timeout: 15)
+            Thread.sleep(forTimeInterval: 0.5)
+            try? app.screenshot().pngRepresentation.write(to: URL(fileURLWithPath: "\(dir)/font-\(font).png"))
+            app.terminate()
+        }
+    }
 }

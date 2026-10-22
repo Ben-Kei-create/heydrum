@@ -12,7 +12,7 @@ enum StartDelay {
 /// Reading-screen text size: big enough to be read from a distance, shrinking only as the text grows.
 enum PlaybackTextStyle {
     static func fontSize(forCharacterCount count: Int, scale: CGFloat = 1) -> CGFloat {
-        base(forCharacterCount: count) * min(max(scale, 1), 2)
+        base(forCharacterCount: count) * min(max(scale, 1), 6)
     }
 
     /// Sized from the FULL text length (known up front) so the font never changes while text is revealed.

@@ -254,6 +254,10 @@ final class HeyDrumUITests: XCTestCase {
         XCTAssertTrue(el("volumeSlider").waitForExistence(timeout: 3))
         XCTAssertEqual(el("volumeSlider").value as? String, "100パーセント")
         XCTAssertTrue(el("speedPicker").exists)
+        app.swipeUp()
+        XCTAssertTrue(el("textScaleSlider").waitForExistence(timeout: 3), "text size slider")
+        XCTAssertTrue(el("readingFontPicker").exists, "reading font picker")
+        app.swipeDown()
         XCTAssertTrue(el("voicePreviewButton").exists)
         app.swipeUp()
         XCTAssertTrue(el("restoreButton").waitForExistence(timeout: 3))
@@ -272,7 +276,8 @@ final class HeyDrumUITests: XCTestCase {
         let center = el("playbackCenterButton")
         XCTAssertTrue(center.waitForExistence(timeout: 5))
         XCTAssertTrue(center.label.hasPrefix("あと"), "centre control announces the countdown, got \(center.label)")
-        XCTAssertTrue(el("playbackStatus").label.hasSuffix("秒後に読み上げます"), "countdown label")
+        XCTAssertTrue(el("playbackCountdownSeconds").waitForExistence(timeout: 3), "small seconds counter at the bottom")
+        XCTAssertTrue(el("playbackCountdownSeconds").label.hasPrefix("あと"), el("playbackCountdownSeconds").label)
         el("playbackStopButton").tap()
         XCTAssertTrue(app.navigationBars["音声モード"].waitForExistence(timeout: 3))
         XCTAssertTrue(el("delay-5").isSelected, "selection is kept")
@@ -379,5 +384,53 @@ final class HeyDrumUITests: XCTestCase {
         XCTAssertTrue(el("playbackScreen").waitForExistence(timeout: 10))
         el("playbackScreen").tap()
         XCTAssertTrue(el("homeDrumCard").waitForExistence(timeout: 5))
+    }
+
+    // Bottom-left pause button: same size as stop, mirrored, toggles pause/resume.
+    func testLeftPauseButtonMirrorsStopAndToggles() {
+        launch()
+        tapCard("homeVoiceCard")
+        typeIntoEditor("あいうえおかきくけこさしすせそ")
+        el("keyboardDismiss").tap()
+        el("voiceStartButton").tap()
+        XCTAssertTrue(el("playbackPauseButton").waitForExistence(timeout: 5))
+        let pause = el("playbackPauseButton"), stop = el("playbackStopButton")
+        XCTAssertEqual(pause.frame.width, stop.frame.width, accuracy: 1, "same width as the stop button")
+        XCTAssertEqual(pause.frame.height, stop.frame.height, accuracy: 1, "same height as the stop button")
+        XCTAssertEqual(pause.frame.midY, stop.frame.midY, accuracy: 2, "same row")
+        XCTAssertLessThan(pause.frame.midX, app.frame.width * 0.3, "bottom-left")
+        XCTAssertGreaterThanOrEqual(pause.frame.width, 44)
+        let start = Date()
+        while pause.label != "一時停止", Date().timeIntervalSince(start) < 6 { Thread.sleep(forTimeInterval: 0.1) }
+        XCTAssertEqual(pause.label, "一時停止")
+        pause.tap()
+        XCTAssertEqual(el("playbackPauseButton").label, "再開")
+        XCTAssertEqual(el("playbackCenterButton").label, "再開", "the centre button follows the same state")
+        el("playbackPauseButton").tap()
+        XCTAssertEqual(el("playbackPauseButton").label, "一時停止")
+    }
+
+    func testTextSizeSliderEnlargesTheReadingText() {
+        func readingHeight(slider: CGFloat?) -> CGFloat {
+            app.terminate()
+            launch()
+            if let slider {
+                app.tabBars.buttons["設定"].tap()
+                app.swipeUp()
+                XCTAssertTrue(el("textScaleSlider").waitForExistence(timeout: 5))
+                el("textScaleSlider").adjust(toNormalizedSliderPosition: slider)
+                app.tabBars.buttons["ホーム"].tap()
+            }
+            tapCard("homeVoiceCard")
+            typeIntoEditor("本日は晴天なり")
+            el("keyboardDismiss").tap()
+            el("voiceStartButton").tap()
+            XCTAssertTrue(el("playbackText").waitForExistence(timeout: 5))
+            waitForReadingText("本日は晴天なり")
+            return el("playbackText").frame.height
+        }
+        let standard = readingHeight(slider: nil)
+        let big = readingHeight(slider: 1.0)
+        XCTAssertGreaterThan(big, standard * 1.8, "slider at max makes the text much larger (\(standard) → \(big))")
     }
 }

@@ -69,6 +69,40 @@ struct SettingsView: View {
 
             purchaseSection
 
+            Section("読み上げ文字の大きさ") {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("大きさ").font(.headline)
+                        Spacer()
+                        Text(String(format: "×%.1f", settings.readingTextScale))
+                            .font(.body.monospacedDigit()).foregroundStyle(Palette.muted)
+                            .accessibilityHidden(true)
+                    }
+                    Slider(value: $settings.readingTextScale, in: SettingsStore.textScaleRange, step: 0.1)
+                        .tint(Palette.muted)
+                        .accessibilityLabel("読み上げ文字の大きさ")
+                        .accessibilityValue(String(format: "%.1f倍", settings.readingTextScale))
+                        .accessibilityIdentifier("textScaleSlider")
+                    Text("遠くから読ませたいときは右へ。標準の1.0倍から最大3.0倍まで。")
+                        .font(.caption).foregroundStyle(Palette.muted)
+                    Picker("フォント", selection: $settings.readingFont) {
+                        ForEach(ReadingFont.allCases) { font in
+                            Text(font.label).font(font == .system ? .body : font.font(size: 17)).tag(font)
+                        }
+                    }
+                    .frame(minHeight: Metrics.minTap)
+                    .accessibilityIdentifier("readingFontPicker")
+                    Text("本日は晴天なり")
+                        .font(settings.readingFont.font(size: 30 * CGFloat(settings.readingTextScale)))
+                        .foregroundStyle(Palette.ink)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.2)
+                        .frame(maxWidth: .infinity, minHeight: 60, alignment: .leading)
+                        .accessibilityHidden(true)
+                }
+                .padding(.vertical, 4)
+            }
+
             if ads.privacyOptionsRequired {
                 Section {
                     Button("プライバシー設定") { Task { await ads.presentPrivacyOptions() } }
@@ -80,6 +114,7 @@ struct SettingsView: View {
             Section {
                 NavigationLink("プライバシーポリシー") { PrivacyInfoView() }.frame(minHeight: Metrics.minTap)
                 NavigationLink("アプリについて") { AboutView() }.frame(minHeight: Metrics.minTap)
+                NavigationLink("フォントのライセンス") { FontLicensesView() }.frame(minHeight: Metrics.minTap)
             }
         }
         .scrollContentBackground(.hidden)
@@ -192,5 +227,57 @@ struct PrivacyInfoView: View {
         .background(Palette.paper)
         .navigationTitle("プライバシーポリシー")
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct FontLicensesView: View {
+    private let items: [(title: String, copyright: String, file: String)] = [
+        ("M PLUS 1", "Copyright 2021 The M+ FONTS Project Authors (https://github.com/coz-m/MPLUS_FONTS)", "License-MPLUS1-OFL"),
+        ("Kosugi Maru", "Kosugi Maru — Apache License 2.0", "License-KosugiMaru-Apache2"),
+        ("WDXL Lubrifont JP N", "Copyright 2025 The WDXL Lubrifont Project Authors (https://github.com/NightFurySL2001/WD-XL-font) / Copyright 2018-2020 The ZCOOL QingKe HuangYou Project Authors", "License-WDXLLubrifont-OFL"),
+    ]
+
+    var body: some View {
+        List {
+            Section {
+                Text("読み上げ画面のフォントとして、次のオープンライセンスのフォントを同梱しています。")
+                    .font(.footnote).foregroundStyle(Palette.muted)
+            }
+            ForEach(items, id: \.title) { item in
+                Section(item.title) {
+                    Text(item.copyright).font(.footnote).foregroundStyle(Palette.muted)
+                    NavigationLink("ライセンス全文") { LicenseTextView(title: item.title, resource: item.file) }
+                        .frame(minHeight: Metrics.minTap)
+                }
+            }
+        }
+        .scrollContentBackground(.hidden)
+        .background(Palette.paper)
+        .navigationTitle("フォントのライセンス")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct LicenseTextView: View {
+    let title: String
+    let resource: String
+
+    var body: some View {
+        ScrollView {
+            Text(loadText())
+                .font(.system(.caption, design: .monospaced))
+                .foregroundStyle(Palette.ink)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(Metrics.outerPadding)
+        }
+        .background(Palette.paper)
+        .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func loadText() -> String {
+        guard let url = Bundle.main.url(forResource: resource, withExtension: "txt"),
+              let text = try? String(contentsOf: url, encoding: .utf8) else { return "ライセンス文書を読み込めませんでした。" }
+        return text
     }
 }

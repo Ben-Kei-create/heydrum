@@ -42,10 +42,28 @@ final class SettingsStoreTests: XCTestCase {
         XCTAssertEqual(s.masterVolume, AppSettings.defaultVolume)
     }
 
+    func testReadingTextScaleDefaultsToOneAndPersistsWithClamping() {
+        let d = defaults()
+        let a = SettingsStore(defaults: d)
+        XCTAssertEqual(a.readingTextScale, 1.0)
+        a.readingTextScale = 2.4
+        XCTAssertEqual(SettingsStore(defaults: d).readingTextScale, 2.4)
+        a.readingTextScale = 9
+        XCTAssertEqual(a.readingTextScale, 3.0, "max 3.0x")
+        a.readingTextScale = 0.1
+        XCTAssertEqual(a.readingTextScale, 1.0, "min = standard size")
+        a.readingTextScale = .nan
+        XCTAssertEqual(a.readingTextScale, 1.0)
+        d.set(50.0, forKey: SettingsStore.Key.textScale)
+        XCTAssertEqual(SettingsStore(defaults: d).readingTextScale, 3.0)
+    }
+
     func testSpeechRatesAreHalfOfThePreviousSpeed() {
-        // Previous rates were 0.43 / 0.50 / 0.57 (normal = system default 0.5). Owner: about half → ~0.25.
-        XCTAssertEqual(SpeechSpeed.normal.utteranceRate, 0.25, accuracy: 0.001)
-        XCTAssertLessThanOrEqual(SpeechSpeed.fast.utteranceRate, 0.35, "even 'fast' is far slower than before")
+        // Previous rates were 0.43 / 0.50 / 0.57 (normal = system default 0.5). Owner: about half the speed.
+        // The engine's rate scale is non-linear (see SpeechSpeed.utteranceRate): 0.10 measured ≈1.5–1.9× longer.
+        XCTAssertEqual(SpeechSpeed.normal.utteranceRate, 0.10, accuracy: 0.001)
+        XCTAssertEqual(SpeechSpeed.slow.utteranceRate, 0.0, accuracy: 0.001)
+        XCTAssertLessThanOrEqual(SpeechSpeed.fast.utteranceRate, 0.30, "even 'fast' is far slower than before")
         XCTAssertLessThan(SpeechSpeed.slow.utteranceRate, SpeechSpeed.normal.utteranceRate)
     }
 

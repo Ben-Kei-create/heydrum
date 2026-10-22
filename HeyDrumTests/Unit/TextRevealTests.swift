@@ -61,6 +61,8 @@ final class TextRevealTests: XCTestCase {
         XCTAssertEqual(PlaybackTextStyle.fontSize(forCharacterCount: 10), 88, "short phrases keep the 88pt look")
         XCTAssertGreaterThanOrEqual(PlaybackTextStyle.fontSize(forCharacterCount: 500), 46)
         XCTAssertEqual(PlaybackTextStyle.fontSize(forCharacterCount: 500, scale: 1.5), 69, accuracy: 0.01, "Dynamic Type scale applies")
-        XCTAssertEqual(PlaybackTextStyle.fontSize(forCharacterCount: 500, scale: 9), 92, accuracy: 0.01, "capped at 2x")
+        XCTAssertEqual(PlaybackTextStyle.fontSize(forCharacterCount: 500, scale: 9), 276, accuracy: 0.01, "capped at 6x (2x Dynamic Type × 3x slider)")
+        XCTAssertEqual(PlaybackTextStyle.fontSize(forCharacterCount: 10, scale: 3), 264, accuracy: 0.01, "the slider can make short text huge")
+        XCTAssertEqual(PlaybackTextStyle.fontSize(forCharacterCount: 10, scale: 0.2), 88, accuracy: 0.01, "never below the standard size")
     }
 }

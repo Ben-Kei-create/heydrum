@@ -61,3 +61,14 @@ Not verified: the real `AVSpeechSynthesizer` range-notification granularity on d
 | `-only-testing:HeyDrumUITests test` (SHOT_DIR set, so screenshot tests ran too) | PASS — 28 tests, 0 failures (new: greeting appears with "ドラム", no controls, closes itself; tap skips it; volume slider shows 100%) |
 Evidence: `docs/evidence/launch-greeting.png`. Store screenshots/IAP image recaptured (settings now shows 100% volume).
 NOT verified: the actual sound of Eddy (only names/ids and event flow; Eddy is matched by name and the Mac lists `Eddy` as ja-JP, the simulator voice list was not printed), whether the new rates really sound like half speed (T-057 needs ears on a device), the greeting on a physical device. The App Preview video was not re-made (it still shows 70%-era settings and no greeting).
+
+## 2026-10-22 (later) — text size slider, left pause button, seconds counter, fonts, speech speed measurement
+| Command | Result |
+|---|---|
+| `-only-testing:HeyDrumTests test` | PASS — 139 tests, 1 skipped (rate sweep calibration probe, env-gated), 0 failures |
+| `-only-testing:HeyDrumUITests/HeyDrumUITests` + `ScreenshotTests/testFontSamples` | PASS — 25 tests, 0 failures |
+Speech speed, measured on the real engine (same 31-character sentence; duration vs. old normal rate 0.50):
+- iOS simulator voice (Kyoko compact): 0.50 → 5.4 s; new slow 0.0 → 9.7 s (1.8×); normal 0.10 → 8.1 s (1.5×); fast 0.25 → 7.0 s (1.3×). The first attempt (normal 0.25) was only 1.3× slower, which is why the rates were changed to 0.0/0.10/0.25.
+- Mac, Eddy: 0.50 → 7.4 s; 0.25 → 10.8 s; 0.10 → 14.2 s (1.9×); 0.0 → 16.7 s (2.3×). Mac, Kyoko: 0.10 → 1.5×; 0.0 → 1.7×.
+=> "exactly half the speed" is reached for Eddy at normal, but not for Kyoko (about 1.5×). Phrase pauses would be needed for more (not implemented).
+Evidence: `docs/evidence/reading-fonts.png` (4 fonts, left pause button, bottom controls). Not verified: sound/feel on a physical device (T-057), VoiceOver by a human.

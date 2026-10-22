@@ -5,6 +5,7 @@ import SwiftUI
 struct PlaybackView: View {
     @Environment(AppCoordinator.self) private var coordinator
     @Environment(PlaybackViewModel.self) private var playback
+    @Environment(SettingsStore.self) private var settings
     /// 1.0 at the default text size; grows with the user's Dynamic Type setting.
     @ScaledMetric(relativeTo: .largeTitle) private var typeScale: CGFloat = 1
     private var isGreeting: Bool { coordinator.request?.source == .greeting }
@@ -18,7 +19,7 @@ struct PlaybackView: View {
                             // Text appears as the synthesizer announces it. Left-aligned and top-anchored so
                             // already shown lines never move; the font is fixed for the whole session.
                             Text(playback.visibleText.isEmpty ? " " : playback.visibleText)   // never an empty Text (keeps the element and one line of height)
-                                .font(.system(size: PlaybackTextStyle.fontSize(forCharacterCount: playback.text.count, scale: typeScale), weight: .bold))
+                                .font(settings.readingFont.font(size: PlaybackTextStyle.fontSize(forCharacterCount: playback.text.count, scale: min(typeScale, 2) * CGFloat(settings.readingTextScale))))
                                 .foregroundStyle(Palette.ink)
                                 .lineSpacing(10)
                                 .multilineTextAlignment(.leading)
@@ -58,6 +59,15 @@ struct PlaybackView: View {
             .padding(.top, 8)
 
             HStack {
+                if !isGreeting { pauseSideButton } else { Color.clear.frame(width: Metrics.minTap, height: Metrics.minTap) }
+                Spacer()
+                if let remaining = playback.countdownRemaining {
+                    Text("\(remaining)秒")
+                        .font(.footnote.monospacedDigit())
+                        .foregroundStyle(Palette.muted)
+                        .accessibilityLabel("あと\(remaining)秒")
+                        .accessibilityIdentifier("playbackCountdownSeconds")
+                }
                 Spacer()
                 stopButton
             }
@@ -74,7 +84,7 @@ struct PlaybackView: View {
     }
 
     private var statusText: String {
-        if let remaining = playback.countdownRemaining { return "\(remaining)秒後に読み上げます" }
+        if playback.countdownRemaining != nil { return "まもなく読み上げます" }
         return switch playback.state {
         case .idle, .preparing: "準備しています…"
         case .speaking: "読み上げ中"
@@ -91,12 +101,7 @@ struct PlaybackView: View {
                 Circle().fill(Palette.primaryOrange).frame(width: 72, height: 72)
                 switch playback.state {
                 case .idle, .preparing:
-                    if let remaining = playback.countdownRemaining {
-                        Text("\(remaining)").font(.system(size: 40, weight: .bold, design: .rounded)).foregroundStyle(Palette.ink)
-                            .accessibilityIdentifier("playbackCountdown")
-                    } else {
-                        ProgressView().tint(Palette.ink)
-                    }
+                    ProgressView().tint(Palette.ink)
                 case .speaking:
                     Image(systemName: "pause.fill").font(.title.weight(.bold)).foregroundStyle(Palette.ink)
                 case .paused:
@@ -145,5 +150,35 @@ struct PlaybackView: View {
         .buttonStyle(.plain)
         .accessibilityLabel(finished ? "戻る" : "停止")
         .accessibilityIdentifier("playbackStopButton")
+    }
+
+    /// Bottom-left twin of the stop button: same size, same quiet grey (no orange).
+    private var pauseSideButton: some View {
+        let icon: String
+        let label: String
+        let enabled: Bool
+        switch playback.state {
+        case .speaking: (icon, label, enabled) = ("pause.fill", "一時停止", true)
+        case .paused: (icon, label, enabled) = ("play.fill", "再開", true)
+        case .finished, .failed: (icon, label, enabled) = ("arrow.counterclockwise", "もう一度", true)
+        case .idle, .preparing: (icon, label, enabled) = ("pause.fill", "一時停止", false)
+        }
+        return Button { playback.centerAction() } label: {
+            VStack(spacing: 2) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(Palette.muted)
+                    .frame(width: 28, height: 28)
+                    .background(Palette.adBackground, in: Circle())
+                Text(label).font(.caption2).foregroundStyle(Palette.muted)
+            }
+            .frame(minWidth: Metrics.minTap, minHeight: Metrics.minTap)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!enabled)
+        .opacity(enabled ? 1 : 0.4)
+        .accessibilityLabel(label == "もう一度" ? "もう一度読み上げる" : label)
+        .accessibilityIdentifier("playbackPauseButton")
     }
 }
