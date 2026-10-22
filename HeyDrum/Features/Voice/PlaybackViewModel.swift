@@ -64,9 +64,9 @@ final class PlaybackViewModel {
     func centerAction() {
         switch state {
         case .speaking:
-            if let id = sessionID, hub.pause(id) { state = .paused }
+            if let id = sessionID, hub.pause(id) { enterPaused() }
         case .paused:
-            if let id = sessionID, hub.resume(id) { state = .speaking }
+            if let id = sessionID, hub.resume(id) { enterSpeakingAfterPause() }
         case .finished, .failed:
             startSession()
         case .preparing, .idle:
@@ -110,13 +110,27 @@ final class PlaybackViewModel {
         revealedUTF16 = 0
     }
 
+    /// Pausing freezes the display completely, including the "no range notifications" safety net.
+    private func enterPaused() {
+        state = .paused
+        fallbackTask?.cancel()
+        fallbackTask = nil
+    }
+
+    /// After a resume the safety net starts over, but only if no range has arrived yet.
+    private func enterSpeakingAfterPause() {
+        state = .speaking
+        if !receivedRange, let id = sessionID { scheduleRevealFallback(for: id) }
+    }
+
     private func scheduleRevealFallback(for id: UUID) {
         fallbackTask?.cancel()
         fallbackTask = Task { [weak self] in
             guard let self else { return }
             await self.sleep(self.revealFallbackDelay)
             if Task.isCancelled { return }
-            guard self.sessionID == id, !self.receivedRange, self.state == .speaking || self.state == .paused else { return }
+            // Never while paused: the display is frozen then (the timer is restarted on resume).
+            guard self.sessionID == id, !self.receivedRange, self.state == .speaking else { return }
             self.revealedUTF16 = self.text.utf16.count     // no range notifications on this system: show all, no progress
         }
     }
@@ -162,9 +176,9 @@ final class PlaybackViewModel {
             receivedRange = true
             if end > revealedUTF16 { revealedUTF16 = end }
         case .paused:
-            if state == .speaking { state = .paused }
+            if state == .speaking { enterPaused() }
         case .resumed:
-            if state == .paused { state = .speaking }
+            if state == .paused { enterSpeakingAfterPause() }
         case .finished:
             switch state {
             case .preparing, .speaking, .paused:

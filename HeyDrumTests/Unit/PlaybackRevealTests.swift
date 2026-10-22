@@ -221,4 +221,70 @@ final class PlaybackRevealTests: XCTestCase {
         await settle()
         XCTAssertEqual(r.vm.visibleText, "あい", "progress display is kept; fallback is only for silent engines")
     }
+
+    // Codex P1 (T-048 × T-052): pausing before the first range must keep the text hidden, even after the fallback delay.
+    func testFallbackNeverRevealsUnreadTextWhilePausedBeforeFirstRange() async {
+        let r = make()
+        _ = await startSpeaking(r, "一時停止中はまだ読んでいない文章を出さない。")
+        await waitUntil("fallback armed") { r.ticker.pending == 1 }
+        r.vm.centerAction()                                // pause before any range
+        XCTAssertEqual(r.vm.state, .paused)
+        r.ticker.tick()                                    // the old timer expires while paused
+        await settle()
+        XCTAssertEqual(r.vm.visibleText, "", "frozen while paused")
+        XCTAssertEqual(r.ticker.pending, 0, "no timer runs while paused")
+    }
+
+    func testFallbackRestartsAfterResumeWhenStillNoRange() async {
+        let r = make()
+        _ = await startSpeaking(r, "再開後も通知がない環境")
+        await waitUntil("fallback armed") { r.ticker.pending == 1 }
+        r.vm.centerAction()                                // pause
+        r.ticker.tick()
+        await settle()
+        r.vm.centerAction()                                // resume
+        XCTAssertEqual(r.vm.state, .speaking)
+        XCTAssertEqual(r.vm.visibleText, "", "resuming alone reveals nothing")
+        await waitUntil("fallback re-armed") { r.ticker.pending >= 1 }
+        r.ticker.tick()
+        await waitUntil("fallback after resume") { r.vm.visibleText == "再開後も通知がない環境" }
+    }
+
+    func testResumeWithRangesNeverTriggersTheFallback() async {
+        let r = make()
+        let id = await startSpeaking(r, "あいうえおかきくけこ")
+        range(r, id, 0, 3)
+        await waitUntil("3") { r.vm.revealedUTF16 == 3 }
+        r.vm.centerAction()                                // pause
+        r.vm.centerAction()                                // resume
+        await settle()
+        r.ticker.tick()
+        await settle()
+        XCTAssertEqual(r.vm.visibleText, "あいう", "ranges were received: no safety net")
+    }
+
+    func testServiceSidePauseAndResumeEventsBehaveTheSame() async {
+        let r = make()
+        let id = await startSpeaking(r, "イベント経由の一時停止")
+        await waitUntil("fallback armed") { r.ticker.pending == 1 }
+        r.speech.send(.paused(sessionID: id))
+        await waitUntil("paused") { r.vm.state == .paused }
+        r.ticker.tick()
+        await settle()
+        XCTAssertEqual(r.vm.visibleText, "")
+        r.speech.send(.resumed(sessionID: id))
+        await waitUntil("speaking") { r.vm.state == .speaking }
+        await waitUntil("fallback re-armed") { r.ticker.pending >= 1 }
+    }
+
+    func testStopOrInterruptWhilePausedBeforeRangeStaysHidden() async {
+        let r = make()
+        _ = await startSpeaking(r, "停止後も見せない文章")
+        r.vm.centerAction()                                // pause
+        r.vm.interrupt()
+        r.ticker.tick()
+        await settle()
+        XCTAssertEqual(r.vm.visibleText, "")
+        XCTAssertEqual(r.vm.state, .finished)
+    }
 }

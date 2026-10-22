@@ -108,3 +108,8 @@
 - ライセンス: M PLUS 1 と WDXL Lubrifont は SIL OFL 1.1、Kosugi Maru は Apache 2.0。いずれも同梱・再配布可。ライセンス全文を `Resources/Fonts/License-*.txt` に同梱し、アプリ内「設定>フォントのライセンス」で表示(著作権表示と全文の同梱が条件)。再配布時にフォントを改変していない。
 - 注意: Kosugi Maru と Lubrifont はウェイトが1種類(太字にならない)。ごく稀なかな(ゕゖゔヷ-ヺ)は一部フォントに無く、その文字だけシステムフォントで表示される(`FONT-COVERAGE`ログ、テスト済み: 常用のかな・数字・句読点・サンプル漢字は全フォントで表示可)。
 - 対応テスト: ReadingFontTests(3), UI(設定にピッカー), 画面サンプル `docs/evidence/reading-fonts.png`。
+
+### ADR-023 / Codex review of 15371f8 (2026-10-22)
+- P1: 最初のrange通知の前に一時停止すると、2秒のfallbackが停止中に全文を公開していた → 一時停止でfallbackタイマーを止め、再開後に(range未着なら)数え直す。停止/割込み/新session/range受信済みの組合せはテスト化(PlaybackRevealTests +5)。
+- P2: 速度の実時間テストを、声の固定・予備再生・3回の交互測定の中央値に変更し、声名と値をレポートに出力。固定rateの検査(SettingsStoreTests)と実時間ベンチ(統合テスト)を区別。
+- P2: docs/09 の T-055 を 0.0/0.10/0.25 と非線形の実測方針に更新、T-058〜061 の行の `\n` を実際の改行に修正。

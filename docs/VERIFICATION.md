@@ -72,3 +72,9 @@ Speech speed, measured on the real engine (same 31-character sentence; duration 
 - Mac, Eddy: 0.50 → 7.4 s; 0.25 → 10.8 s; 0.10 → 14.2 s (1.9×); 0.0 → 16.7 s (2.3×). Mac, Kyoko: 0.10 → 1.5×; 0.0 → 1.7×.
 => "exactly half the speed" is reached for Eddy at normal, but not for Kyoko (about 1.5×). Phrase pauses would be needed for more (not implemented).
 Evidence: `docs/evidence/reading-fonts.png` (4 fonts, left pause button, bottom controls). Not verified: sound/feel on a physical device (T-057), VoiceOver by a human.
+
+## 2026-10-22 (Codex review of 15371f8 addressed — ADR-023)
+- `-only-testing:HeyDrumTests test`: PASS — 144 tests, 1 skipped (env-gated calibration probe), 0 failures. New: 5 pause-before-first-range regression tests (T-048 × T-052).
+- Pause-related UI tests (left pause button, reveal freezes on pause, label toggle): PASS (3).
+- Speed test (median of 3 alternating rounds after warm-up): voice=Kyoko, old 4.02 s, slow 7.25 s, normal 6.04 s (1.50×), fast 5.23 s; samples within ±0.01 s on an idle machine.
+- Docs: T-055 and T-058–T-061 rows fixed in docs/09.

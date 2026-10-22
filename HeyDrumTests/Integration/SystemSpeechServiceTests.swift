@@ -106,24 +106,39 @@ final class SystemSpeechServiceTests: XCTestCase {
         XCTAssertGreaterThan(ranges.count, 1, "several chunks, i.e. progressive display is possible (got \(ranges))")
     }
 
-    /// Owner asked for "half the speed". Measures the real engine: old normal (0.50) vs the new rates.
+    /// Owner asked for "half the speed". Real-engine timing is noisy, so: one fixed voice (named in the report),
+    /// a warm-up utterance, three rounds in alternating order, and the MEDIAN per rate. The fixed rates themselves are
+    /// asserted in SettingsStoreTests; this test only checks the real engine really is slower at the new rates.
     func testNewRatesAreReallySlowerThanTheOldNormalRate() async throws {
         let probe = SystemSpeechService()
         try XCTSkipIf((try? probe.verifyReadiness(voiceID: nil)) == nil, "no ja-JP voice installed")
-        let text = "本日は晴天なり。ご来店いただき、まことにありがとうございます。"
-        let old = await RateProbe().measure(text: text, rate: 0.50)
-        let slow = await RateProbe().measure(text: text, rate: SpeechSpeed.slow.utteranceRate)
-        let normal = await RateProbe().measure(text: text, rate: SpeechSpeed.normal.utteranceRate)
-        let fast = await RateProbe().measure(text: text, rate: SpeechSpeed.fast.utteranceRate)
-        try XCTSkipUnless(old != nil && normal != nil && slow != nil && fast != nil, "speech did not finish in time (machine too slow): old=\(String(describing: old)) slow=\(String(describing: slow)) normal=\(String(describing: normal)) fast=\(String(describing: fast))")
-        let report = String(format: "old(0.50)=%.2fs slow(%.2f)=%.2fs normal(%.2f)=%.2fs fast(%.2f)=%.2fs ratio normal/old=%.2f",
-                            old!, SpeechSpeed.slow.utteranceRate, slow!, SpeechSpeed.normal.utteranceRate, normal!, SpeechSpeed.fast.utteranceRate, fast!, normal! / old!)
+        let voiceName = AVSpeechSynthesisVoice(language: "ja-JP")?.name ?? "unknown"
+        let text = "本日は晴天なり。ご来店ありがとうございます。"
+        _ = await RateProbe().measure(text: "あ", rate: 0.5)                       // warm-up (engine start-up cost)
+        let rates: [(String, Float)] = [("old", 0.50), ("slow", SpeechSpeed.slow.utteranceRate),
+                                        ("normal", SpeechSpeed.normal.utteranceRate), ("fast", SpeechSpeed.fast.utteranceRate)]
+        var samples: [String: [TimeInterval]] = [:]
+        for round in 0..<3 {
+            for (name, rate) in (round % 2 == 0 ? rates : rates.reversed()) {
+                if let d = await RateProbe().measure(text: text, rate: rate) { samples[name, default: []].append(d) }
+            }
+        }
+        func median(_ name: String) -> TimeInterval? {
+            guard let v = samples[name]?.sorted(), v.count >= 2 else { return nil }
+            return v[v.count / 2]
+        }
+        try XCTSkipUnless(["old", "slow", "normal", "fast"].allSatisfy { median($0) != nil },
+                          "speech did not finish in time (machine too slow); samples: \(samples)")
+        let old = median("old")!, slow = median("slow")!, normal = median("normal")!, fast = median("fast")!
+        let report = String(format: "voice=%@ medians old(0.50)=%.2fs slow(%.2f)=%.2fs normal(%.2f)=%.2fs fast(%.2f)=%.2fs ratio normal/old=%.2f samples=%@",
+                            voiceName, old, SpeechSpeed.slow.utteranceRate, slow, SpeechSpeed.normal.utteranceRate, normal,
+                            SpeechSpeed.fast.utteranceRate, fast, normal / old, "\(samples)")
         print("RATE-MEASUREMENT \(report)")
         XCTContext.runActivity(named: report) { _ in }
-        XCTAssertGreaterThan(normal!, old! * 1.35, "new normal must be clearly slower than the old one. \(report)")
-        XCTAssertGreaterThan(slow!, normal!, report)
-        XCTAssertGreaterThan(normal!, fast!, report)
-        XCTAssertGreaterThan(fast!, old! * 1.1, "even 'fast' is slower than the old normal. \(report)")
+        XCTAssertGreaterThan(normal, old * 1.3, "new normal must be clearly slower than the old one. \(report)")
+        XCTAssertGreaterThan(slow, normal, report)
+        XCTAssertGreaterThan(normal, fast, report)
+        XCTAssertGreaterThan(fast, old * 1.1, "even 'fast' is slower than the old normal. \(report)")
     }
 
     /// Calibration probe: prints how long the real engine needs at several rates (not an assertion).
