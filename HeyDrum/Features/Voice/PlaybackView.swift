@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Dedicated reading screen (UI-05): pure white, large text, centre control, small stop bottom-right.
+/// Dedicated reading screen (UI-05): pure white, large text, quiet controls at the bottom corners.
 /// The shared ad slot (owned by AppShell) stays below this view.
 struct PlaybackView: View {
     @Environment(AppCoordinator.self) private var coordinator
@@ -46,7 +46,6 @@ struct PlaybackView: View {
                     .font(.footnote)
                     .foregroundStyle(Palette.muted)
                     .accessibilityIdentifier("playbackStatus")
-                centerButton
                 if case .failed(let message) = playback.state {
                     Text(message)
                         .font(.footnote)
@@ -91,40 +90,6 @@ struct PlaybackView: View {
         case .paused: "一時停止中"
         case .finished: "読み上げが完了しました"
         case .failed: "読み上げできませんでした"
-        }
-    }
-
-    private var centerButton: some View {
-        Button { playback.centerAction() } label: {
-            ZStack {
-                Circle().fill(Palette.softOrange).frame(width: 96, height: 96)
-                Circle().fill(Palette.primaryOrange).frame(width: 72, height: 72)
-                switch playback.state {
-                case .idle, .preparing:
-                    ProgressView().tint(Palette.ink)
-                case .speaking:
-                    Image(systemName: "pause.fill").font(.title.weight(.bold)).foregroundStyle(Palette.ink)
-                case .paused:
-                    Image(systemName: "play.fill").font(.title.weight(.bold)).foregroundStyle(Palette.ink)
-                case .finished, .failed:
-                    Image(systemName: "arrow.counterclockwise").font(.title.weight(.bold)).foregroundStyle(Palette.ink)
-                }
-            }
-            .frame(width: 96, height: 96)
-            .contentShape(Circle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(centerLabel)
-        .accessibilityIdentifier("playbackCenterButton")
-    }
-
-    private var centerLabel: String {
-        switch playback.state {
-        case .idle, .preparing: playback.countdownRemaining.map { "あと\($0)秒" } ?? "準備中"
-        case .speaking: "一時停止"
-        case .paused: "再開"
-        case .finished: "もう一度読み上げる"
-        case .failed: "もう一度試す"
         }
     }
 

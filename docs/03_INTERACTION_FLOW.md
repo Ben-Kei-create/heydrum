@@ -95,9 +95,9 @@ sequenceDiagram
 5. **同じIDを維持し、履歴総件数は増えない**。削除や再生直後のリスト更新でもIDが変わらない。
 
 ## UC-05 一時停止・再開・停止
-- 再生中の中央押下→ `pauseSpeaking(at: .immediate)` → 成功時 `paused`。
-- 一時停止中の中央押下→ `continueSpeaking()` → `speaking`。
-- 完了時の中央押下→ 新しい`sessionID`で全文を最初から再読（表示は空から再び累積）。履歴登録はしない。
+- 再生中の左下押下→ `pauseSpeaking(at: .immediate)` → 成功時 `paused`。
+- 一時停止中の左下押下→ `continueSpeaking()` → `speaking`。
+- 完了時の左下押下→ 新しい`sessionID`で全文を最初から再読（表示は空から再び累積）。履歴登録はしない。
 - 一時停止中は表示進捗も停止、再開で続行。手動停止・背景化・割込みでは未読の後続文字を公開しない（自然終了だけが全文を表示する）。
 - 右下停止→ `activeSessionID`破棄 → `stopSpeaking(at: .immediate)` → 広告フッターを残して元画面へpop。二重pop禁止。
 - アプリ背景化→音声を停止。再開時に**勝手に再生しない**。背景化が読み上げ画面中なら `finished` 相当の停止状態にし、明示再生のみ受け付ける。

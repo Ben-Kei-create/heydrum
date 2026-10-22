@@ -45,7 +45,7 @@ final class ScreenshotTests: XCTestCase {
         shot("03-voice")
 
         el("voiceStartButton").tap()
-        XCTAssertTrue(el("playbackCenterButton").waitForExistence(timeout: 5))
+        XCTAssertTrue(el("playbackPauseButton").waitForExistence(timeout: 5))
         Thread.sleep(forTimeInterval: 1.2)
         shot("04-countdown")
         Thread.sleep(forTimeInterval: 5)

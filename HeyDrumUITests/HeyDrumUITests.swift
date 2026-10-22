@@ -89,13 +89,14 @@ final class HeyDrumUITests: XCTestCase {
         XCTAssertTrue(el("playbackScreen").waitForExistence(timeout: 5))
         waitForReadingText("本日は晴天なり")
         XCTAssertFalse(tab("履歴").isHittable, "tab bar is hidden behind the playback screen")
-        XCTAssertTrue(el("playbackCenterButton").isHittable)
+        XCTAssertTrue(el("playbackPauseButton").isHittable)
         let stop = el("playbackStopButton")
         XCTAssertGreaterThanOrEqual(stop.frame.width, 44)
         XCTAssertGreaterThanOrEqual(stop.frame.height, 44)
-        // stop sits at the bottom-right, centre control is centred
+        // stop sits at the bottom-right, pause stays at the bottom-left
         XCTAssertGreaterThan(stop.frame.midX, app.frame.width * 0.7)
-        XCTAssertEqual(el("playbackCenterButton").frame.midX, app.frame.midX, accuracy: 4)
+        XCTAssertLessThan(el("playbackPauseButton").frame.midX, app.frame.width * 0.3)
+        XCTAssertFalse(el("playbackCenterButton").exists, "the orange centre control has been removed")
 
         stop.tap()
         XCTAssertTrue(app.navigationBars["音声モード"].waitForExistence(timeout: 3))
@@ -108,12 +109,12 @@ final class HeyDrumUITests: XCTestCase {
         tapCard("homeVoiceCard")
         typeIntoEditor("あいうえお")
         el("voiceStartButton").tap()
-        XCTAssertTrue(el("playbackCenterButton").waitForExistence(timeout: 5))
-        XCTAssertEqual(el("playbackCenterButton").label, "一時停止")
-        el("playbackCenterButton").tap()
-        XCTAssertEqual(el("playbackCenterButton").label, "再開")
-        el("playbackCenterButton").tap()
-        XCTAssertEqual(el("playbackCenterButton").label, "一時停止")
+        XCTAssertTrue(el("playbackPauseButton").waitForExistence(timeout: 5))
+        XCTAssertEqual(el("playbackPauseButton").label, "一時停止")
+        el("playbackPauseButton").tap()
+        XCTAssertEqual(el("playbackPauseButton").label, "再開")
+        el("playbackPauseButton").tap()
+        XCTAssertEqual(el("playbackPauseButton").label, "一時停止")
     }
 
     // UI test 3: T-012
@@ -227,13 +228,13 @@ final class HeyDrumUITests: XCTestCase {
         el("keyboardDismiss").tap()
         el("voiceStartButton").tap()
         XCTAssertTrue(el("playbackScreen").waitForExistence(timeout: 5))
-        XCTAssertTrue(el("playbackCenterButton").isHittable)
+        XCTAssertTrue(el("playbackPauseButton").isHittable)
         XCTAssertTrue(el("playbackStopButton").isHittable)
         let full = String(repeating: "abcdefghi ", count: 50).trimmingCharacters(in: .whitespaces)
         waitForReadingText(full, timeout: 40)
-        XCTAssertLessThanOrEqual(el("playbackText").frame.maxY, el("playbackCenterButton").frame.minY + 1, "the newest text is scrolled into view above the controls")
+        XCTAssertLessThanOrEqual(el("playbackText").frame.maxY, el("playbackPauseButton").frame.minY + 1, "the newest text is scrolled into view above the controls")
         el("playbackText").swipeUp()           // the long text scrolls without covering the controls
-        XCTAssertTrue(el("playbackCenterButton").isHittable)
+        XCTAssertTrue(el("playbackPauseButton").isHittable)
         XCTAssertLessThanOrEqual(el("playbackStopButton").frame.maxY, el("adSlot").frame.minY + 0.5)
     }
 
@@ -273,9 +274,9 @@ final class HeyDrumUITests: XCTestCase {
         typeIntoEditor("遠くの人へ")
         el("keyboardDismiss").tap()
         el("voiceStartButton").tap()
-        let center = el("playbackCenterButton")
-        XCTAssertTrue(center.waitForExistence(timeout: 5))
-        XCTAssertTrue(center.label.hasPrefix("あと"), "centre control announces the countdown, got \(center.label)")
+        let pause = el("playbackPauseButton")
+        XCTAssertTrue(pause.waitForExistence(timeout: 5))
+        XCTAssertFalse(pause.isEnabled, "pause stays disabled during the countdown")
         XCTAssertTrue(el("playbackCountdownSeconds").waitForExistence(timeout: 3), "small seconds counter at the bottom")
         XCTAssertTrue(el("playbackCountdownSeconds").label.hasPrefix("あと"), el("playbackCountdownSeconds").label)
         el("playbackStopButton").tap()
@@ -343,16 +344,16 @@ final class HeyDrumUITests: XCTestCase {
         typeIntoEditor("あいうえおかきくけこさしすせそたちつてとなにぬねの")
         el("keyboardDismiss").tap()
         el("voiceStartButton").tap()
-        XCTAssertTrue(el("playbackCenterButton").waitForExistence(timeout: 5))
+        XCTAssertTrue(el("playbackPauseButton").waitForExistence(timeout: 5))
         let start = Date()
         while el("playbackText").label == "読み上げ待機中", Date().timeIntervalSince(start) < 8 { Thread.sleep(forTimeInterval: 0.1) }
-        el("playbackCenterButton").tap()                       // pause
-        XCTAssertEqual(el("playbackCenterButton").label, "再開")
+        el("playbackPauseButton").tap()                       // pause
+        XCTAssertEqual(el("playbackPauseButton").label, "再開")
         Thread.sleep(forTimeInterval: 0.5)                     // let any in-flight range settle
         let frozen = el("playbackText").label
         Thread.sleep(forTimeInterval: 1.6)
         XCTAssertEqual(el("playbackText").label, frozen, "display does not advance while paused")
-        el("playbackCenterButton").tap()                       // resume
+        el("playbackPauseButton").tap()                       // resume
         let resumeStart = Date()
         while el("playbackText").label == frozen, Date().timeIntervalSince(resumeStart) < 6 { Thread.sleep(forTimeInterval: 0.1) }
         XCTAssertNotEqual(el("playbackText").label, frozen, "display continues after resume")
@@ -366,7 +367,8 @@ final class HeyDrumUITests: XCTestCase {
         el("keyboardDismiss").tap()
         el("voiceStartButton").tap()
         XCTAssertTrue(el("playbackText").waitForExistence(timeout: 5))
-        XCTAssertTrue(el("playbackCenterButton").label.hasPrefix("あと"), "centre label was '\(el("playbackCenterButton").label)', status '\(el("playbackStatus").label)'")
+        XCTAssertTrue(el("playbackCountdownSeconds").label.hasPrefix("あと"))
+        XCTAssertFalse(el("playbackPauseButton").isEnabled)
         XCTAssertEqual(el("playbackText").label, "読み上げ待機中", "no part of the text is visible while counting down")
     }
 
@@ -375,7 +377,7 @@ final class HeyDrumUITests: XCTestCase {
         launch(["-uitest-greeting"])
         XCTAssertTrue(el("playbackScreen").waitForExistence(timeout: 10), "greeting screen appears at launch")
         waitForReadingText("ドラム", timeout: 8)
-        XCTAssertFalse(el("playbackCenterButton").exists, "no pause/resume controls on the greeting")
+        XCTAssertFalse(el("playbackPauseButton").exists, "no pause/resume controls on the greeting")
         XCTAssertTrue(el("homeDrumCard").waitForExistence(timeout: 20), "the greeting closes by itself and shows Home")
     }
 
@@ -405,7 +407,7 @@ final class HeyDrumUITests: XCTestCase {
         XCTAssertEqual(pause.label, "一時停止")
         pause.tap()
         XCTAssertEqual(el("playbackPauseButton").label, "再開")
-        XCTAssertEqual(el("playbackCenterButton").label, "再開", "the centre button follows the same state")
+        XCTAssertFalse(el("playbackCenterButton").exists, "pause is controlled only from the bottom-left")
         el("playbackPauseButton").tap()
         XCTAssertEqual(el("playbackPauseButton").label, "一時停止")
     }
