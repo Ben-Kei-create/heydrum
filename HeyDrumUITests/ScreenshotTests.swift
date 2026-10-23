@@ -14,7 +14,7 @@ final class ScreenshotTests: XCTestCase {
     }
 
     private func start(_ extra: [String] = []) {
-        app.launchArguments = ["-uitest", "-uitest-purchased", "-uitest-history-sample"] + extra + ["-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
+        app.launchArguments = ["-uitest", "-uitest-purchased", "-uitest-history-sample", "-uitest-reading-font", "lubrifont"] + extra + ["-AppleLanguages", "(ja)", "-AppleLocale", "ja_JP"]
         app.launch()
     }
 

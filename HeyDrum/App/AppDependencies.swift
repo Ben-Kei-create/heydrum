@@ -91,6 +91,7 @@ struct UITestLaunch {
     var historyCount = 0
     var sampleHistory = false
     var greeting = false
+    /// UI tests default to the system font (stable geometry); pass `-uitest-reading-font lubrifont` for the app default.
     var readingFont = ReadingFont.system
     var textScale = 1.0
     var chunkInterval: Double = 0.35

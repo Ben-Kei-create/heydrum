@@ -36,5 +36,9 @@ enum ReadingFont: String, CaseIterable, Identifiable, Sendable {
         return .custom(name, fixedSize: size)
     }
 
-    static func from(_ raw: String?) -> ReadingFont { raw.flatMap(ReadingFont.init(rawValue:)) ?? .system }
+    /// Owner request (2026-10-23): the reading text starts in WDXL Lubrifont JP N. Other fonts stay selectable.
+    static let `default`: ReadingFont = .lubrifont
+
+    /// Unset or unknown stored values fall back to the default font.
+    static func from(_ raw: String?) -> ReadingFont { raw.flatMap(ReadingFont.init(rawValue:)) ?? .default }
 }

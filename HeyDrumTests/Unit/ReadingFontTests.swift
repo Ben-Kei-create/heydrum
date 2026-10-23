@@ -15,15 +15,18 @@ final class ReadingFontTests: XCTestCase {
         XCTAssertEqual(ReadingFont.allCases.count, 4)
     }
 
-    func testSelectionPersistsAndUnknownValuesFallBackToSystem() {
+    func testDefaultIsLubrifontSelectionPersistsAndUnknownValuesFallBack() {
         let d = defaults()
         let a = SettingsStore(defaults: d)
-        XCTAssertEqual(a.readingFont, .system, "default stays the system font")
+        XCTAssertEqual(a.readingFont, .lubrifont, "owner: the initial font is WDXL Lubrifont JP N")
+        XCTAssertEqual(ReadingFont.default, .lubrifont)
         a.readingFont = .kosugiMaru
-        XCTAssertEqual(SettingsStore(defaults: d).readingFont, .kosugiMaru)
+        XCTAssertEqual(SettingsStore(defaults: d).readingFont, .kosugiMaru, "other fonts remain selectable and persist")
+        a.readingFont = .system
+        XCTAssertEqual(SettingsStore(defaults: d).readingFont, .system, "choosing the system font is remembered too")
         d.set("no-such-font", forKey: SettingsStore.Key.font)
-        XCTAssertEqual(SettingsStore(defaults: d).readingFont, .system)
-        XCTAssertEqual(ReadingFont.from(nil), .system)
+        XCTAssertEqual(SettingsStore(defaults: d).readingFont, .lubrifont, "unknown values fall back to the default")
+        XCTAssertEqual(ReadingFont.from(nil), .lubrifont)
     }
 
     /// Everyday hiragana/katakana (incl. small kana and ヴ), digits and punctuation. Only very rare kana (ゕ ゖ ゔ ヷ-ヺ)

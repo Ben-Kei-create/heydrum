@@ -119,3 +119,7 @@
 - 読上げ中・一時停止中・完了・失敗の全状態で中央ボタンを廃止し、左下のグレーのボタンへ操作を集約。右下の停止/戻る、状態文、下部カウントダウン、共通広告枠は維持。
 - 既存UIテストを左下操作と中央ボタン不在の検証へ更新。
 - 検証: Xcode27.1 / iPhone18 Pro iOS27.0、build-for-testing成功。UI4件（入力保持/停止、下部pause/resumeと中央ボタン不在、カウントダウン、500文字Dynamic Type）すべてPASS。ログ・結果: `/tmp/heydrum-remove-orange/`。
+
+### ADR-024 / Review rejection ITMS-91064 and default font (2026-10-23)
+- **審査用ビルド(2)が自動検証で却下**: `ITMS-91064 Invalid tracking information`。原因は `PrivacyInfo.xcprivacy` が `NSPrivacyTracking=true` かつ **空の `NSPrivacyTrackingDomains` 配列**を持っていたこと(Appleの検証は空配列の存在でも不正と判定する報告あり: https://developer.apple.com/forums/thread/842856)。→ **空配列のキーを削除**(`NSPrivacyTracking=true`は維持、SDK側の宣言に依存)。再発防止に `PrivacyManifestTests`(空配列禁止・ドメインがあればtracking=true・使用理由API宣言)を追加。ビルド番号を3へ(再アップロードには未使用の番号が必要)。
+- **既定フォントを WDXL Lubrifont JP N に変更**(オーナー指示)。他のフォントは設定から選択可能。未設定・不正値は既定にフォールバック。UIテストは幾何学の安定のためシステムフォント固定(引数で変更可)、ストア用スクショは既定フォントで撮影。
