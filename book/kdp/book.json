@@ -1,0 +1,12 @@
+{
+  "slug": "app-store-shinsei-handson",
+  "title": "個人開発者のための App Store 申請ハンズオン",
+  "subtitle": "契約・ビルド・提出・却下対応まで、実際にやった順番で。AIに投げる依頼文つき",
+  "author": "NingentteWinner",
+  "publisher": "NingentteWinner",
+  "edition": "第1版　2026年10月",
+  "copyright": "© 2026 NingentteWinner. All rights reserved.",
+  "date": "2026-10-24",
+  "identifier": "urn:uuid:7c1c1e0e-6b0e-4a5e-9d58-2b1a2d7a4f10",
+  "description_short": "iPhoneアプリをApp Storeに出すまでを、契約、登録、ビルド、提出、却下対応の順に解説する実録のハンズオン。"
+}

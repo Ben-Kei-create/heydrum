@@ -1,0 +1,67 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KDP 登録キット</title>
+<style>body{font-family:-apple-system,"Hiragino Sans",sans-serif;max-width:860px;margin:24px auto;padding:0 16px;color:#302C29;background:#FAF8F4;line-height:1.6}
+h1{font-size:22px}h2{font-size:17px;margin:28px 0 8px;border-left:6px solid #ED8D45;padding-left:10px}
+.f{background:#fff;border:1px solid #DDD7D0;border-radius:12px;padding:10px 12px;margin:8px 0}.l{font-size:13px;color:#756F69;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+pre{white-space:pre-wrap;word-break:break-word;margin:0;font:15px/1.6 -apple-system,"Hiragino Sans",sans-serif}
+button{background:#ED8D45;color:#302C29;border:0;border-radius:10px;padding:8px 14px;font-weight:700;cursor:pointer;min-height:36px}button.ok{background:#8FD19E}.cnt{font-size:12px;color:#756F69}</style></head><body>
+<h1>KDP 登録キット</h1><p class="cnt">各ブロックの「コピー」を押して、KDPの入力欄に貼り付けます。画面の選択肢の文言は、KDPの表示に従ってください。</p>
+<h2>1. Kindle電子書籍の詳細（本の情報）</h2>
+<div class="f"><div class="l"><span>言語 <span class="cnt">3字</span></span><button onclick="cp(this)">コピー</button></div><pre>日本語</pre></div>
+<div class="f"><div class="l"><span>書名 <span class="cnt">27字</span></span><button onclick="cp(this)">コピー</button></div><pre>個人開発者のための App Store 申請ハンズオン</pre></div>
+<div class="f"><div class="l"><span>サブタイトル <span class="cnt">38字</span></span><button onclick="cp(this)">コピー</button></div><pre>契約・ビルド・提出・却下対応まで、実際にやった順番で。AIに投げる依頼文つき</pre></div>
+<div class="f"><div class="l"><span>シリーズ名 <span class="cnt">4字</span></span><button onclick="cp(this)">コピー</button></div><pre>（空欄）</pre></div>
+<div class="f"><div class="l"><span>版（任意） <span class="cnt">12字</span></span><button onclick="cp(this)">コピー</button></div><pre>第1版　2026年10月</pre></div>
+<div class="f"><div class="l"><span>著者名（ペンネーム） <span class="cnt">15字</span></span><button onclick="cp(this)">コピー</button></div><pre>NingentteWinner</pre></div>
+<div class="f"><div class="l"><span>KDPが姓・名に分けて入力を求める場合 <span class="cnt">50字</span></span><button onclick="cp(this)">コピー</button></div><pre>画面の欄に合わせて、NingentteWinner を入力する（欄が2つ必須なら、画面の案内に従う）</pre></div>
+<div class="f"><div class="l"><span>寄稿者（任意） <span class="cnt">4字</span></span><button onclick="cp(this)">コピー</button></div><pre>（空欄）</pre></div>
+<div class="f"><div class="l"><span>内容紹介（HTMLを使える欄。4,000文字まで） <span class="cnt">1121字</span></span><button onclick="cp(this)">コピー</button></div><pre>&lt;b&gt;「Xcodeでアプリは作れた。でも、App Store Connectの画面を前にして、何から手を付ければいいのか分からない。」&lt;/b&gt;&lt;br&gt;&lt;br&gt;
+本書は、個人開発者が自分のiPhoneアプリをApp Storeに出すまでの道のりを、&lt;b&gt;実際にやった順番どおり&lt;/b&gt;に解説する手引きです。画面の名前、入力する文字、コマンドを、そのまま写せる形で書きました。&lt;br&gt;&lt;br&gt;
+&lt;b&gt;この本で分かること&lt;/b&gt;
+&lt;ul&gt;
+&lt;li&gt;契約（有料App契約）、Bundle ID、アプリ、アプリ内課金（非消耗型）、AdMobの登録の順番と、待ち時間のあるものを先にやる理由&lt;/li&gt;
+&lt;li&gt;秘密の設定をgitの外に出す方法と、テスト用の値のままReleaseを作らせない「リリースガード」&lt;/li&gt;
+&lt;li&gt;プライバシーマニフェスト、「Appのプライバシー」の回答、ポリシーページの公開（GitHub Pages）&lt;/li&gt;
+&lt;li&gt;アーカイブとアップロード、ビルド番号、無害な警告（dSYM）の見分け方&lt;/li&gt;
+&lt;li&gt;ストアの文言の文字数の上限、スクリーンショット（6.9インチ・6.3インチ）、アプリプレビューの注意&lt;/li&gt;
+&lt;li&gt;審査の提出と、「審査用に追加できません」の読み方&lt;/li&gt;
+&lt;/ul&gt;
+&lt;b&gt;失敗の実録つき&lt;/b&gt;&lt;br&gt;
+筆者が実際に、&lt;b&gt;自動検証（ITMS-91064）で2回弾かれた&lt;/b&gt;経緯を、原因の読み違いも含めて、そのまま載せました。「バイナリが無効」と表示されたときの正しい探し方、却下メッセージの読み方も解説します。&lt;br&gt;&lt;br&gt;
+&lt;b&gt;AIと一緒に進めるための付録&lt;/b&gt;&lt;br&gt;
+実装が終わったら、そのままClaude Codeに貼れば、申請に必要な文言、画像、公開ページ、プライバシーの回答案を一式作らせる依頼文のひな形を収録しています。AIに任せてよいことと、自分でやることの線引きも書きました。&lt;br&gt;&lt;br&gt;
+&lt;b&gt;こんな方に&lt;/b&gt;
+&lt;ul&gt;
+&lt;li&gt;初めてApp Storeにアプリを出す個人開発者&lt;/li&gt;
+&lt;li&gt;広告（AdMob）やアプリ内課金を入れて、プライバシーの回答や契約が不安な方&lt;/li&gt;
+&lt;li&gt;却下やエラーのメールの読み方を知りたい方&lt;/li&gt;
+&lt;/ul&gt;
+&lt;b&gt;ご注意&lt;/b&gt;&lt;br&gt;
+画面の名称、画像のサイズ、規約は変わります。本書の内容は2026年10月時点の筆者の実体験です。迷ったときは、App Store Connectの画面の表示を優先してください。本書の文章は、AI（Claude）が作成した原稿を、著者が確認・編集したものです。</pre></div>
+<div class="f"><div class="l"><span>出版に関する権利 <span class="cnt">26字</span></span><button onclick="cp(this)">コピー</button></div><pre>私は著作権者であり、出版に必要な権利を保有しています</pre></div>
+<div class="f"><div class="l"><span>対象年齢（任意） <span class="cnt">4字</span></span><button onclick="cp(this)">コピー</button></div><pre>（空欄）</pre></div>
+<div class="f"><div class="l"><span>成人向けコンテンツ <span class="cnt">3字</span></span><button onclick="cp(this)">コピー</button></div><pre>いいえ</pre></div>
+<h2>2. 検索キーワード（7つまで。1つ50文字以内）</h2>
+<div class="f"><div class="l"><span>キーワード1 <span class="cnt">12字</span></span><button onclick="cp(this)">コピー</button></div><pre>App Store 申請</pre></div>
+<div class="f"><div class="l"><span>キーワード2 <span class="cnt">9字</span></span><button onclick="cp(this)">コピー</button></div><pre>iOSアプリ 公開</pre></div>
+<div class="f"><div class="l"><span>キーワード3 <span class="cnt">7字</span></span><button onclick="cp(this)">コピー</button></div><pre>個人開発 審査</pre></div>
+<div class="f"><div class="l"><span>キーワード4 <span class="cnt">17字</span></span><button onclick="cp(this)">コピー</button></div><pre>App Store Connect</pre></div>
+<div class="f"><div class="l"><span>キーワード5 <span class="cnt">13字</span></span><button onclick="cp(this)">コピー</button></div><pre>TestFlight 手順</pre></div>
+<div class="f"><div class="l"><span>キーワード6 <span class="cnt">11字</span></span><button onclick="cp(this)">コピー</button></div><pre>Xcode アーカイブ</pre></div>
+<div class="f"><div class="l"><span>キーワード7 <span class="cnt">12字</span></span><button onclick="cp(this)">コピー</button></div><pre>AdMob アプリ内課金</pre></div>
+<h2>3. カテゴリ（最大3つ。画面の一覧から選ぶ）</h2>
+<div class="f"><div class="l"><span>探し方 <span class="cnt">104字</span></span><button onclick="cp(this)">コピー</button></div><pre>カテゴリ選択の画面で「iPhone」「iOS」「モバイルアプリ開発」「プログラミング」で検索し、内容に近いものを選ぶ（最大3つ）。表示される一覧にないカテゴリは選べないので、画面の候補から、最も近いものを選ぶ</pre></div>
+<h2>4. Kindle電子書籍のコンテンツ</h2>
+<div class="f"><div class="l"><span>DRM（デジタル著作権管理） <span class="cnt">45字</span></span><button onclick="cp(this)">コピー</button></div><pre>どちらでも可（出版後は変更できない）。迷うなら「いいえ」。購入者が自分の端末で自由に読める</pre></div>
+<div class="f"><div class="l"><span>原稿のアップロード <span class="cnt">45字</span></span><button onclick="cp(this)">コピー</button></div><pre>dist/app-store-shinsei-handson.epub（EPUBファイル）</pre></div>
+<div class="f"><div class="l"><span>表紙のアップロード <span class="cnt">32字</span></span><button onclick="cp(this)">コピー</button></div><pre>images/cover.jpg（1600×2560、JPEG）</pre></div>
+<div class="f"><div class="l"><span>ISBN <span class="cnt">25字</span></span><button onclick="cp(this)">コピー</button></div><pre>不要（Kindle電子書籍はASINが自動で付く）</pre></div>
+<div class="f"><div class="l"><span>AI生成コンテンツ <span class="cnt">150字</span></span><button onclick="cp(this)">コピー</button></div><pre>テキスト：「はい」。AIツール：Claude（Anthropic）。本文はAIが作成した原稿を、著者が確認・編集した。画像：本文のスクリーンショットと表紙は、アプリの画面とプログラムによる描画で、AI生成の画像ではない（「いいえ」）。翻訳：なし。※選択肢の文言は画面に従う。迷ったら「はい」と申告する</pre></div>
+<h2>5. 価格設定</h2>
+<div class="f"><div class="l"><span>KDPセレクト <span class="cnt">78字</span></span><button onclick="cp(this)">コピー</button></div><pre>迷うなら、最初の90日は登録（Kindle Unlimitedの対象になる。この期間は、他の電子書店で売れない）。他の書店でも売る予定があるなら、登録しない</pre></div>
+<div class="f"><div class="l"><span>販売地域 <span class="cnt">11字</span></span><button onclick="cp(this)">コピー</button></div><pre>全世界（全地域）の権利</pre></div>
+<div class="f"><div class="l"><span>主要マーケット <span class="cnt">12字</span></span><button onclick="cp(this)">コピー</button></div><pre>Amazon.co.jp</pre></div>
+<div class="f"><div class="l"><span>ロイヤリティ <span class="cnt">26字</span></span><button onclick="cp(this)">コピー</button></div><pre>70%（価格 ¥250〜¥1,250の範囲で選べる）</pre></div>
+<div class="f"><div class="l"><span>価格（おすすめ） <span class="cnt">8字</span></span><button onclick="cp(this)">コピー</button></div><pre>980円（税込）</pre></div>
+<div class="f"><div class="l"><span>価格の別案 <span class="cnt">43字</span></span><button onclick="cp(this)">コピー</button></div><pre>780円：手に取りやすさ重視／1,250円：1冊の価値を高めに見せたい（70%の上限）</pre></div>
+<div class="f"><div class="l"><span>他のマーケット <span class="cnt">21字</span></span><button onclick="cp(this)">コピー</button></div><pre>「自動的に換算」でよい（または自分で設定）</pre></div>
+<script>async function cp(b){const t=b.closest('.f').querySelector('pre').textContent;try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}b.textContent='コピー済み';b.classList.add('ok');setTimeout(()=>{b.textContent='コピー';b.classList.remove('ok')},1400)}</script></body></html>

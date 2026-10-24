@@ -1,0 +1,5 @@
+EPUB: /Applications/heydrum/book/dist/app-store-shinsei-handson.epub
+size: 0.41 MB
+chapters: 31
+approx characters (HTML text): 52775
+problems: 0

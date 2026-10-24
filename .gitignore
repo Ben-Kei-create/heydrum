@@ -7,3 +7,4 @@ build/
 *.xcresult
 Config/Secrets.xcconfig
 Config/Local.xcconfig
+book/dist/preview/
