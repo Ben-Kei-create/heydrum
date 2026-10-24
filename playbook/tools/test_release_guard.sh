@@ -21,4 +21,30 @@ run bad-bundle 1 $U $A $P "nodots" NO
 run test-mode-on 1 $U $A $P $B YES
 # Debug is never blocked
 CONFIGURATION=Debug AD_UNIT_ID="" sh "$G" >/dev/null 2>&1 && pass=$((pass+1)) || { failn=$((failn+1)); echo "FAIL: debug blocked"; }
+# Privacy manifest consistency (ITMS-91064)
+T=$(mktemp -d)
+mk() { # name tracking(true|false) domains-xml
+  cat > "$T/$1.plist" <<PL
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict><key>NSPrivacyTracking</key><$2/>$3</dict></plist>
+PL
+}
+mrun() { # name expect
+  CONFIGURATION=Release MANIFEST="$T/$1.plist" AD_UNIT_ID=$U GAD_APPLICATION_IDENTIFIER=$A IN_APP_PURCHASE_PRODUCT_ID=$P HEYDRUM_BUNDLE_ID=$B ADS_TEST_MODE=NO sh "$G" >/dev/null 2>&1; rc=$?
+  if [ "$rc" = "$2" ]; then pass=$((pass+1)); else failn=$((failn+1)); echo "FAIL: manifest $1 (exit $rc, expected $2)"; fi
+}
+mk false-absent false ""
+mk true-absent true ""
+mk false-empty false "<key>NSPrivacyTrackingDomains</key><array/>"
+mk true-empty true "<key>NSPrivacyTrackingDomains</key><array/>"
+mk false-listed false "<key>NSPrivacyTrackingDomains</key><array><string>example.net</string></array>"
+mk true-listed true "<key>NSPrivacyTrackingDomains</key><array><string>example.net</string></array>"
+mrun false-absent 0
+mrun true-absent 1
+mrun false-empty 1
+mrun true-empty 1
+mrun false-listed 1
+mrun true-listed 0
+rm -rf "$T"
 echo "release_guard tests: $pass passed, $failn failed"; [ "$failn" = 0 ]

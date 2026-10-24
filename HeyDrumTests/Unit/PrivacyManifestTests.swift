@@ -17,16 +17,21 @@ final class PrivacyManifestTests: XCTestCase {
         }
     }
 
-    func testTrackingFlagIsTrueWheneverDomainsAreListed() throws {
+    /// Both directions of Apple's rule: domains listed ⇒ tracking true, and tracking true ⇒ at least one domain.
+    func testTrackingFlagAndDomainsAreConsistent() throws {
         let m = try manifest()
-        if let domains = m["NSPrivacyTrackingDomains"] as? [String], !domains.isEmpty {
-            XCTAssertEqual(m["NSPrivacyTracking"] as? Bool, true, "NSPrivacyTracking must be true if domains are listed")
-        }
+        let domains = (m["NSPrivacyTrackingDomains"] as? [String]) ?? []
+        let tracking = (m["NSPrivacyTracking"] as? Bool) ?? false
+        if !domains.isEmpty { XCTAssertTrue(tracking, "NSPrivacyTracking must be true if domains are listed") }
+        if tracking { XCTAssertFalse(domains.isEmpty, "NSPrivacyTracking true needs at least one tracking domain (build 3 was rejected for this)") }
     }
 
-    func testRequiredReasonDeclarationsAreWellFormed() throws {
+    /// Pinned decision (ADR-025): the app-level flag is false and no domains are listed; the ad SDKs ship their own
+    /// manifests, ATT is still requested, and listing Google's ad domains would block ads for users who deny ATT.
+    func testAppLevelManifestFollowsAdr025() throws {
         let m = try manifest()
-        XCTAssertEqual(m["NSPrivacyTracking"] as? Bool, true, "personalised ads with ATT (ADR-017)")
+        XCTAssertEqual(m["NSPrivacyTracking"] as? Bool, false)
+        XCTAssertNil(m["NSPrivacyTrackingDomains"])
         let apis = try XCTUnwrap(m["NSPrivacyAccessedAPITypes"] as? [[String: Any]])
         let userDefaults = apis.first { $0["NSPrivacyAccessedAPIType"] as? String == "NSPrivacyAccessedAPICategoryUserDefaults" }
         XCTAssertEqual(userDefaults?["NSPrivacyAccessedAPITypeReasons"] as? [String], ["CA92.1"])

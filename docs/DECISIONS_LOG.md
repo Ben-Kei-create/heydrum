@@ -123,3 +123,10 @@
 ### ADR-024 / Review rejection ITMS-91064 and default font (2026-10-23)
 - **審査用ビルド(2)が自動検証で却下**: `ITMS-91064 Invalid tracking information`。原因は `PrivacyInfo.xcprivacy` が `NSPrivacyTracking=true` かつ **空の `NSPrivacyTrackingDomains` 配列**を持っていたこと(Appleの検証は空配列の存在でも不正と判定する報告あり: https://developer.apple.com/forums/thread/842856)。→ **空配列のキーを削除**(`NSPrivacyTracking=true`は維持、SDK側の宣言に依存)。再発防止に `PrivacyManifestTests`(空配列禁止・ドメインがあればtracking=true・使用理由API宣言)を追加。ビルド番号を3へ(再アップロードには未使用の番号が必要)。
 - **既定フォントを WDXL Lubrifont JP N に変更**(オーナー指示)。他のフォントは設定から選択可能。未設定・不正値は既定にフォールバック。UIテストは幾何学の安定のためシステムフォント固定(引数で変更可)、ストア用スクショは既定フォントで撮影。
+
+### ADR-025 / ITMS-91064 again on build 3 — manifest switched to tracking=false, no domains (2026-10-24)
+- **事実:** ビルド3(`NSPrivacyTracking=true`、`NSPrivacyTrackingDomains`キーなし)も同じ `ITMS-91064` で却下。ADR-024の「空配列を消す」だけでは不十分だった。Appleの説明(フォーラム経由)では「`NSPrivacyTracking=true` なら追跡ドメインを1つ以上書く」必要があり、`true`＋ドメインなしは不正。
+- **選択肢:** (A) `true`＋Googleの広告ドメインを書く → ドメインはATT未許可の端末で通信が遮断されるため、許可しない人に広告が出なくなる恐れ。Googleは一覧を公開していない。(B) アプリ側は `NSPrivacyTracking=false`・ドメイン無し → 広告SDK自身が各自のマニフェストを持ち、同構成が審査を通った報告がある。広告表示に影響しない。
+- **決定:** (B)。ATTの許可画面・UMP・App Store Connectの「トラッキングに使用」の申告は変更なし。
+- **根拠の限界:** Appleの公式文書で(B)の有効性が保証されているわけではなく、フォーラムの報告に基づく。審査を通るかはアップロードで確認する。
+- **再発防止:** ビルド時のリリースガードに「マニフェストの整合性」(true⇔ドメイン1件以上、空配列禁止)を追加(`tools/release_guard.sh`、テスト6件追加=計20件)。単体テストも双方向の規則を検査し、現在の方針を固定(`PrivacyManifestTests`)。ビルド番号は4。
