@@ -1,6 +1,6 @@
 # アップロードするものはここにまとめてあります
 
-App Store Connect > 対象App > iOS App バージョン 1.0 > 「プレビューとスクリーンショット」。
+App Store Connect > 対象App > iOS App バージョン 1.0.1 > 「プレビューとスクリーンショット」。
 **サイズごとに別の欄**があります。審査には、次の **2つのサイズの両方**が必要です（App Store Connect のエラー表示に従う）:
 
 | 置き場所 | 画像サイズ | App Store Connect の欄 | 備考 |

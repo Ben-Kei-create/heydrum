@@ -130,3 +130,8 @@
 - **決定:** (B)。ATTの許可画面・UMP・App Store Connectの「トラッキングに使用」の申告は変更なし。
 - **根拠の限界:** Appleの公式文書で(B)の有効性が保証されているわけではなく、フォーラムの報告に基づく。審査を通るかはアップロードで確認する。
 - **再発防止:** ビルド時のリリースガードに「マニフェストの整合性」(true⇔ドメイン1件以上、空配列禁止)を追加(`tools/release_guard.sh`、テスト6件追加=計20件)。単体テストも双方向の規則を検査し、現在の方針を固定(`PrivacyManifestTests`)。ビルド番号は4。
+
+## ADR-026: 1.0.1 — 公開ページを運営サイト GiveTex に移行
+- **事実:** AdMob の app-ads.txt 確認は、App Store に登録したサイトのドメイン直下を見る。旧 `ben-kei-create.github.io/heydrum-site/` は下位パスのため、確認できなかった。`givetex.org` には app-ads.txt が公開済み。
+- **決定:** プライバシーポリシー・サポート・マーケティングURLを `https://www.givetex.org/apps/heydrum/…` に移す（GiveTeX PR #11）。アプリ内のポリシーURL(`AppConfig.privacyPolicyURL`)も同じに変更。バージョン 1.0.1、ビルド 5。機能変更なし。運営者表記は GiveTex、連絡先は `contact[at]givetex.org`（個人のメール・氏名は掲載しない）。
+- **未確認:** 実機・提出ビルドでのリンク動作、AdMob の再確認結果。

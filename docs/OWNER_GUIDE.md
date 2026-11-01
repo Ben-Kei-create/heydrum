@@ -66,9 +66,7 @@ App Store Connect > 該当App > 「収益化」>「アプリ内課金」> 「+�
 5. 公開後は `app-ads.txt`（任意）: https://support.google.com/admob/answer/9363762
 
 ### 2-5. プライバシーポリシーURL
-ひな形: `site/privacy-policy.html`（この repo にあります。連絡先メールの `★` 2か所を自分のものに書き換える）。
-公開方法（一番簡単）: GitHub に **公開リポジトリ `heydrum-site` を新規作成**（https://github.com/new）→ `privacy-policy.html` を `index.html` 名でアップロード → Settings > Pages > Branch `main` / `/ (root)` → 数分後の URL（`https://<ユーザー名>.github.io/heydrum-site/`）がポリシーURL。
-※ このアプリの repo の Pages は使わない（設計書が全部公開されるため）。
+公開済み（運営サイトGiveTex）: `https://www.givetex.org/apps/heydrum/privacy/`。サポートは `/support/`、トップは `/apps/heydrum/`。ページの元は GiveTeX リポジトリの `apps/heydrum/`。旧ひな形 `site/` と GitHub Pages `heydrum-site` は、1.0.1 で使わなくなった（氏名・メールが載っているので、`heydrum-site` は非公開化か削除を推奨）。
 そのURLを:
 - App Store Connect > アプリ情報 >「プライバシーポリシーURL」に入力
 - `HeyDrum/App/AppConfig.swift` の `privacyPolicyURL` に `URL(string: "…")` として設定（私に URL を教えてくれれば設定します）
