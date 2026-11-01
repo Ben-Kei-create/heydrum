@@ -7,7 +7,7 @@ struct AppConfig: Equatable, Sendable {
     let removeAdsProductID: String
 
     /// Public policy page (GitHub Pages, published 2026-10-22). Shown as a link in Settings > プライバシーポリシー.
-    static let privacyPolicyURL: URL? = URL(string: "https://ben-kei-create.github.io/heydrum-site/privacy-policy.html")
+    static let privacyPolicyURL: URL? = URL(string: "https://www.givetex.org/apps/heydrum/privacy/")
 
     static func from(bundle: Bundle = .main) -> AppConfig {
         func string(_ key: String) -> String {
